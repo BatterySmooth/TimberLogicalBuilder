@@ -12,15 +12,16 @@ public class LogicBuilder
   
   public LogicGraph Build() => _graph;
   
-#region Levers
+#region General
+  #region Levers
   public Lever Lever(string name, Vector3Int position)
   {
     var lever = new Lever(name, position);
     return _graph.Add(lever);
   }
-#endregion
+  #endregion
 
-#region Relays
+  #region Relays
   public Relay Passthrough(string name, Vector3Int position, ISignalSource input)
     => AddSingleRelay(RelayMode.Passthrough, name, position, input);
   public Relay Not(string name, Vector3Int position, ISignalSource input)
@@ -41,9 +42,9 @@ public class LogicBuilder
     var relay = new Relay(name, position, mode).Inputs(inputA, inputB);
     return _graph.Add(relay);
   }
-#endregion
+  #endregion
   
-#region Memory
+  #region Memory
   public Memory SetReset(string name, Vector3Int position, ISignalSource input, ISignalSource? reset = null)
     => AddSingleMemory(MemoryMode.SetReset, name, position, input, reset);
   public Memory Toggle(string name, Vector3Int position, ISignalSource input, ISignalSource? reset = null)
@@ -64,9 +65,9 @@ public class LogicBuilder
     if (reset is not null) memory.Reset(reset);
     return _graph.Add(memory);
   }
-#endregion
+  #endregion
 
-#region Timer
+  #region Timer
   public Timer Pulse(string name, Vector3Int position, TimerInterval intervalA, ISignalSource input, ISignalSource? reset = null)
     => AddSingleTimer(TimerMode.Pulse, name, position, intervalA, input, reset);
   public Timer Accumulator(string name, Vector3Int position, TimerInterval intervalA, ISignalSource input, ISignalSource? reset = null)
@@ -87,9 +88,9 @@ public class LogicBuilder
     if  (reset is not null) delay.Reset(reset);
     return _graph.Add(delay);
   }
-#endregion
+  #endregion
 
-#region Indicators
+  #region Indicators
   public Indicator Indicator(string name, Vector3Int position, ISignalSource input, Color? color = null)
   {
     var indicator = new Indicator(name, position).Connect(input);
@@ -97,5 +98,49 @@ public class LogicBuilder
     _graph.Add(indicator);
     return indicator;
   }
+  #endregion
 #endregion
+
+#region Layout
+  public LogicBuilder Layout(
+    Vector3Int anchor,
+    Vector3Int primaryStep,
+    Vector3Int secondaryStep,
+    Action<LogicLayout> layout)
+  {
+    var scope = new LogicLayout(
+      this,
+      anchor,
+      primaryStep,
+      secondaryStep);
+    layout(scope);
+    return this;
+  }
+  
+  public LogicBuilder Layout(
+    Vector3Int anchor,
+    LayoutAxis primaryAxis,
+    int spacing,
+    Action<LogicLayout> layout)
+  {
+    Vector3Int primary = primaryAxis switch
+    {
+      LayoutAxis.X => new Vector3Int(spacing,0,0),
+      LayoutAxis.Y => new Vector3Int(0,spacing,0),
+      LayoutAxis.Z => new Vector3Int(0,0,spacing),
+      _ => throw new ArgumentOutOfRangeException()
+    };
+
+    var secondary = primaryAxis switch
+    {
+      LayoutAxis.X => new Vector3Int(0,spacing,0),
+      LayoutAxis.Y => new Vector3Int(spacing,0,0),
+      LayoutAxis.Z => new Vector3Int(spacing,0,0),
+      _ => throw new ArgumentOutOfRangeException()
+    };
+
+    return Layout(anchor, primary, secondary, layout);
+  }
+#endregion
+
 }
