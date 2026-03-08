@@ -230,7 +230,7 @@ private static List<Indicator> BuildIndicatorGrid(LogicBuilder builder, Vector3I
 }
 ```
 
-#### Advances Srtructure Example
+#### Advanced Srtructure Example
 
 Using this pattern, the builder can be nested to create a complex component. This does not serve any real advantage compared to building the individual components, but allows for them to be built in-line:
 
