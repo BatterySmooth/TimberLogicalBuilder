@@ -106,13 +106,15 @@ public class LogicBuilder
     Vector3Int anchor,
     Vector3Int primaryStep,
     Vector3Int secondaryStep,
+    Vector3Int tertiaryStep,
     Action<LogicLayout> layout)
   {
     var scope = new LogicLayout(
       this,
       anchor,
       primaryStep,
-      secondaryStep);
+      secondaryStep,
+      tertiaryStep);
     layout(scope);
     return this;
   }
@@ -120,26 +122,29 @@ public class LogicBuilder
   public LogicBuilder Layout(
     Vector3Int anchor,
     LayoutAxis primaryAxis,
+    LayoutAxis secondaryAxis,
     int spacing,
     Action<LogicLayout> layout)
   {
-    Vector3Int primary = primaryAxis switch
+    if (primaryAxis == secondaryAxis)
+      throw new ArgumentException("Primary and secondary axes must be different.");
+    
+    var tertiaryAxis = Enum.GetValues<LayoutAxis>()
+      .First(a => a != primaryAxis && a != secondaryAxis);
+
+    var primary = AxisVector(primaryAxis);
+    var secondary = AxisVector(secondaryAxis);
+    var tertiary = AxisVector(tertiaryAxis);
+    
+    return Layout(anchor, primary, secondary, tertiary, layout);
+    
+    Vector3Int AxisVector(LayoutAxis axis) => axis switch
     {
-      LayoutAxis.X => new Vector3Int(spacing,0,0),
-      LayoutAxis.Y => new Vector3Int(0,spacing,0),
-      LayoutAxis.Z => new Vector3Int(0,0,spacing),
+      LayoutAxis.X => new Vector3Int(spacing, 0, 0),
+      LayoutAxis.Y => new Vector3Int(0, spacing, 0),
+      LayoutAxis.Z => new Vector3Int(0, 0, spacing),
       _ => throw new ArgumentOutOfRangeException()
     };
-
-    var secondary = primaryAxis switch
-    {
-      LayoutAxis.X => new Vector3Int(0,spacing,0),
-      LayoutAxis.Y => new Vector3Int(spacing,0,0),
-      LayoutAxis.Z => new Vector3Int(spacing,0,0),
-      _ => throw new ArgumentOutOfRangeException()
-    };
-
-    return Layout(anchor, primary, secondary, layout);
   }
 #endregion
 

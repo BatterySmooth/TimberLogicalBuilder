@@ -13,6 +13,7 @@ public sealed class LogicLayout
     private Vector3Int _cursor;
     private readonly Vector3Int _primaryStep;
     private readonly Vector3Int _secondaryStep;
+    private readonly Vector3Int _tertiaryStep;
     private readonly bool _autoAdvance;
 
     internal LogicLayout(
@@ -20,6 +21,7 @@ public sealed class LogicLayout
       Vector3Int anchor,
       Vector3Int primaryStep,
       Vector3Int secondaryStep,
+      Vector3Int tertiaryStep,
       bool autoAdvance = true)
     {
       _builder = builder;
@@ -27,6 +29,7 @@ public sealed class LogicLayout
       _cursor = anchor;
       _primaryStep = primaryStep;
       _secondaryStep = secondaryStep;
+      _tertiaryStep =  tertiaryStep;
       _autoAdvance = autoAdvance;
     }
 
@@ -41,17 +44,44 @@ public sealed class LogicLayout
     #endregion
   
     #region Cursor
-    public LogicLayout Gap(int count = 1)
+    
+    private int _primaryIndex;
+    private int _secondaryIndex;
+    private int _tertiaryIndex;
+    
+    public LogicLayout Step(int count = 1)
     {
       _cursor += _primaryStep * count;
+      _primaryIndex += count;
       return this;
     }
 
     public LogicLayout NextRow(bool resetPrimary = true)
     {
       _cursor += _secondaryStep;
-      if (resetPrimary)
-        _cursor = new Vector3Int(_anchor.X, _cursor.Y, _cursor.Z);
+      _secondaryIndex++;
+      if (resetPrimary && _primaryIndex != 0)
+      {
+        _cursor -= _primaryStep * _primaryIndex;
+        _primaryIndex = 0;
+      }
+      return this;
+    }
+    
+    public LogicLayout NextLayer(bool resetPrimary = true, bool resetSecondary = true)
+    {
+      _cursor += _tertiaryStep;
+      _tertiaryIndex++;
+      if (resetPrimary && _primaryIndex != 0)
+      {
+        _cursor -= _primaryStep * _primaryIndex;
+        _primaryIndex = 0;
+      }
+      if (resetSecondary && _secondaryIndex != 0)
+      {
+        _cursor -= _secondaryStep * _secondaryIndex;
+        _secondaryIndex = 0;
+      }
       return this;
     }
 
@@ -64,6 +94,9 @@ public sealed class LogicLayout
     public LogicLayout Reset()
     {
       _cursor = _anchor;
+      _primaryIndex = 0;
+      _secondaryIndex = 0;
+      _tertiaryIndex = 0;
       return this;
     }
     #endregion
