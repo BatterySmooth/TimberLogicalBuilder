@@ -232,7 +232,7 @@ private static List<Indicator> BuildIndicatorGrid(LogicBuilder builder, Vector3I
 
 #### Advances Srtructure Example
 
-Using this pattern, the builder can be nested to create a complex component. This does not serve any real difference compared to building the individual components, but allows for them to be built in-line:
+Using this pattern, the builder can be nested to create a complex component. This does not serve any real advantage compared to building the individual components, but allows for them to be built in-line:
 
 ```cs
 private static ISignalSource BuildClock(LogicBuilder builder, Vector3Int anchor)
