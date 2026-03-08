@@ -230,6 +230,37 @@ private static List<Indicator> BuildIndicatorGrid(LogicBuilder builder, Vector3I
 }
 ```
 
+#### Advances Srtructure Example
+
+Using this pattern, the builder can be nested to create a complex component. This does not serve any real difference compared to building the individual components, but allows for them to be built in-line:
+
+```cs
+private static ISignalSource BuildClock(LogicBuilder builder, Vector3Int anchor)
+{
+  var clockAutoLev = builder
+    .Lever("Clock (Auto)", anchor + (2, 0, 0))
+    .Pinned();
+  var clockManOut = builder
+    .And("CLK-MAN", anchor + (0, 1, 0), 
+builder.Not("!Clock (Auto)", anchor + (1, 1, 0), clockAutoLev).Covered(), 
+builder.Lever("Clock (Manual)", anchor).Sprung().Pinned())
+    .Covered();
+  var clock = builder
+    .Or("CLK", anchor + (1, 0, 0), 
+      builder.Oscillator("CLK-OSCILLATOR", anchor + (2, 1, 0), (1, TimerUnit.Ticks), (1, TimerUnit.Ticks), clockAutoLev).Covered(),
+      clockManOut)
+    .Covered();
+  builder
+    .Indicator("Clock", anchor + (1, 0, 2),
+      builder.Or("CLK", anchor + (1, 0, 0),
+          builder.Oscillator("CLK-OSCILLATOR", anchor + (2, 1, 0), (1, TimerUnit.Ticks), (1, TimerUnit.Ticks), clockAutoLev).Covered(),
+          clockManOut)
+      .Covered(), Color.DeepPink)
+    .Pinned();
+  return clock;
+}
+```
+
 ## Generating the Output
 
 Once you've constructed the components and structures you want, you can serialise them and output them directly to a new save like so:
