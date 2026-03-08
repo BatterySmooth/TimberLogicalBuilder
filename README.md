@@ -16,7 +16,7 @@ This library is to help scaffold and build logical systems in Timberborn. The li
 
 The Builder is the main class for contructing logical systems. You can create one like so:
 
-```csharp
+```cs
 var builder = new LogicBuilder();
 ```
 
@@ -24,7 +24,7 @@ var builder = new LogicBuilder();
 
 To create a component, you can call various methods on the builder to create components. Each of these function return the component it creates, so you can save this in a variable and use it as inputs in other components
 
-```csharp
+```cs
 var lever = builder.Lever("Lever", (1, 1, 4));
 ```
 
@@ -33,7 +33,7 @@ Each component takes, at minimum, `name` (string) and `position` (Vector3Int), a
 > [!TIP]
 > The position of components uses a struct from called `Vector3Int`. This has been set up so it can implicitally convert from a 3-integer tuple.
 > These 2 return the same thing:
-> ```csharp
+> ```cs
 > var a = new Vector3Int(1, 2, 3);
 > var b = (1, 2, 3);
 > ```
@@ -44,7 +44,7 @@ Each component can also be flagged to have a platform built over it using the `C
 
 The Lever class has boolean parameters for `IsSpringReturn` and `IsPinned`, and can be set like so:
 
-```csharp
+```cs
 var lever = builder.Lever("Lever", (1, 1, 4))
   .Pinned()
   .Sprung();
@@ -57,7 +57,7 @@ var lever = builder.Lever("Lever", (1, 1, 4))
 
 The Relay has several modes, and these have been broken down into separate methods on the builder, for ease. A relay can be created with any of these methods:
 
-```csharp
+```cs
 // Used as an example for the sources for the relay components    
 var leverA = builder.Lever("Lever A", (0, 0, 0));
 var leverB = builder.Lever("Lever B", (1, 0, 0));
@@ -73,7 +73,7 @@ var xor = builder.Xor("Xor", (4, 1, 0), leverA, leverB);
 
 Memory cells are done in a similar matter, with different builder methods for each type.
 
-```csharp
+```cs
 // Used as an example for the sources for the memory components    
 var leverA = builder.Lever("Lever A", (0, 0, 0));
 var leverB = builder.Lever("Lever B", (1, 0, 0));
@@ -86,7 +86,7 @@ var flipFlop = builder.FlipFlop("Flip-Flop", (3, 1, 0), leverA, leverB);
 
 > [!TIP]
 > A Memory component can also optionally take a reset signal source, which can be included as an extra parameter at the end of the builder method.
-> ```csharp
+> ```cs
 > var leverA = builder.Lever("Lever A", (0, 0, 0));
 > var leverReset = builder.Lever("Lever Reset", (1, 0, 0));
 > var setReset = builder.SetReset("Set Reset", (0, 1, 0), leverA, leverReset);
@@ -99,14 +99,14 @@ Timers also take 1 or 2 `TimerInterval` structs, dependant on type.
 
 The `TimerInterval` struct, like the `Vector3Int` struct, can implicitally convert from a tuple of an `int` and a `TimerUnit` enum value. The examples below produce the same `TimerInterval`.
 
-```csharp
+```cs
 var a = new TimerInterval(1, TimerUnit.Ticks);
 var b = (1, TimerUnit.Ticks);
 ```
 
 The various Timer components can be created like so:
 
-```csharp
+```cs
 // Used as an example for the sources for the timer components    
 var leverA = builder.Lever("Lever A", (0, 0, 0));
 
@@ -120,7 +120,7 @@ var oscillator = builder.Oscillator("Oscillator", (3, 1, 0), (1, TimerUnit.Ticks
 
 Indicators derive the same base parameters as the rest of the logical components liek `name`, `position`, and a single `input`, but can also optionally take a `color` (from the namespace `System.Drawing.Colors`).
 
-```csharp
+```cs
 // Used as an example for the sources for the indicator component    
 var leverA = builder.Lever("Lever A", (0, 0, 0));
 
@@ -150,7 +150,7 @@ A layout context comes in 2 forms:
  
 A basic use of the layout context would be to create a line of 8 indicators:
 
-```csharp
+```cs
 // Input lever for the builder layout example    
 var source = builder.Lever("Source", (1, 1, BaseZ));
     
@@ -165,7 +165,7 @@ var line = builder.Layout((5, 5, BaseZ), LayoutAxis.X, 1, l =>
 
 This can then be expanded to generate an 8x8 grid of indicators:
 
-```csharp
+```cs
 // Input lever for the builder layout example    
 var source = builder.Lever("Source", (1, 1, BaseZ));
     
@@ -190,7 +190,7 @@ The builder does not contain any structures out-of-the-box, but has been built w
 
 Using the indicator grid above as an example, we can create a structure for it like so:
 
-```csharp
+```cs
 private static void BuildIndicatorGrid(LogicBuilder builder, Vector3Int anchor, ISignalSource input)
 {
   builder.Layout(anchor, LayoutAxis.X, 1, l =>
@@ -209,7 +209,7 @@ private static void BuildIndicatorGrid(LogicBuilder builder, Vector3Int anchor, 
 
 If you need to use components within the structure, you can optionally return them like so:
 
-```csharp
+```cs
 private static List<Indicator> BuildIndicatorGrid(LogicBuilder builder, Vector3Int anchor, ISignalSource input)
 {
   var indicators = new List<Indicator>();
@@ -234,7 +234,7 @@ private static List<Indicator> BuildIndicatorGrid(LogicBuilder builder, Vector3I
 
 Once you've constructed the components and structures you want, you can serialise them and output them directly to a new save like so:
 
-```csharp
+```cs
 string InputSave = @"C:\Path\To\Save\Folder\Blank.timber";
 string OutputSave = @"C:\Path\To\Save\Folder\GeneratedSave.timber";
 
