@@ -191,11 +191,11 @@ var grid = builder.Layout((5, 5, BaseZ), LayoutAxis.X, 1, l =>
 
 ### Structures
 
-For the sake of this document, we will refer to a group of logical components as a Structure.
+For the sake of this section of the document, we will refer to a group of logical nodes (relays, memory cells, etc) as a component.
 
-The builder does not contain any structures out-of-the-box, but has been built with this in mind. You can create structures easily with custom functions, allowing for reusable parts to be defined. This makes it easy for you to drop in a multiplexer or memory bank.
+The builder does not contain any components out-of-the-box, but has been built with this in mind. You can create components easily with custom functions, allowing for reusable parts to be defined. This makes it easy for you to drop in a multiplexer or memory bank.
 
-Using the indicator grid above as an example, we can create a structure for it like so:
+Using the indicator grid above as an example, we can create a component for it like so:
 
 ```csharp
 private static void BuildIndicatorGrid(LogicBuilder builder, Vector3Int anchor, ISignalSource input)
@@ -214,7 +214,7 @@ private static void BuildIndicatorGrid(LogicBuilder builder, Vector3Int anchor, 
 }
 ```
 
-If you need to use components within the structure, you can optionally return them like so:
+If you need to use logical nodes within the component, you can optionally return them like so:
 
 ```csharp
 private static List<Indicator> BuildIndicatorGrid(LogicBuilder builder, Vector3Int anchor, ISignalSource input)
@@ -237,7 +237,7 @@ private static List<Indicator> BuildIndicatorGrid(LogicBuilder builder, Vector3I
 }
 ```
 
-#### Advanced Srtructure Example
+#### Advanced Component Example
 
 Using this pattern, the builder can be nested to create a complex component. This does not serve any real advantage compared to building the individual components, but allows for them to be built in-line:
 
