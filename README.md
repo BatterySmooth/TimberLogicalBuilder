@@ -30,9 +30,6 @@ var lever = builder.Lever("Lever", (1, 1, 4));
 
 Each component takes, at minimum, `name` (string) and `position` (Vector3Int), as displayed above.
 
-> [!IMPORTANT]  
-> In Timberborn, the Z axis in the upwards axis.
-
 > [!TIP]
 > The position of components uses a struct from called `Vector3Int`. This has been set up so it can implicitally convert from a 3-integer tuple.
 > These 2 return the same thing:
@@ -40,6 +37,9 @@ Each component takes, at minimum, `name` (string) and `position` (Vector3Int), a
 > var a = new Vector3Int(1, 2, 3);
 > var b = (1, 2, 3);
 > ```
+
+> [!IMPORTANT]  
+> In Timberborn, the Z axis in the upwards axis.
 
 Each component can also be flagged to have a platform built over it using the `Covered()` method, and can be removed using the `UnCovered()` method. This method adds a double platform for all nodes, except for the Indicator, which gets a single platform.
 
