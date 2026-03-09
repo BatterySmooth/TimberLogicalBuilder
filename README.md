@@ -142,11 +142,15 @@ A layout context comes in 2 forms:
 - Basic, which takes in:
   - A starting position, called the `anchor`
   - A primary axis, from the enum `LayoutAxis` (any of `LayoutAxis.X`, `LayoutAxis.Y`, or `LayoutAxis.Z`)
+  - A secondary axis, in the same form as the primary axis
   - A spacing, controlling the number of blocks moved along the primary axis
 - Advanced, which takes in:
   - A starting position, called the `anchor`
   - A `Vector3Int` of the primary step
   - A `Vector3Int` of the secondary step
+  - A `Vector3Int` of the tertiary step
+
+When inside the layout context, after the creation of each component the cursor position moves by the step declared in teh primary step. In the basic usage, this means taking a step along the primary axis. To move the cursor along the secondary axis, you can call the `NextRow()` method, which optionally takes in a boolean to control whether the primary axis position is reset - set to `true` by default. To advance along the tertiary direction, call the `NextLayer()` method. This also optionally takes in 2 booleans to control whether to reset the primary and secondary axis - once again these default to `true`.
 
 A basic use of the layout context would be to create a line of 8 indicators:
 
