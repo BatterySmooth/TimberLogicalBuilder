@@ -249,20 +249,29 @@ private static ISignalSource BuildClock(LogicBuilder builder, Vector3Int anchor)
     .Pinned();
   var clockManOut = builder
     .And("CLK-MAN", anchor + (0, 1, 0), 
-      builder.Not("!Clock (Auto)", anchor + (1, 1, 0), clockAutoLev).Covered(), 
-      builder.Lever("Clock (Manual)", anchor).Sprung().Pinned())
+      builder
+        .Not("!Clock (Auto)", anchor + (1, 1, 0), clockAutoLev)
+        .Covered(), 
+      builder
+        .Lever("Clock (Manual)", anchor).Sprung()
+        .Pinned())
     .Covered();
   var clock = builder
     .Or("CLK", anchor + (1, 0, 0), 
-      builder.Oscillator("CLK-OSCILLATOR", anchor + (2, 1, 0), (1, TimerUnit.Ticks), (1, TimerUnit.Ticks), clockAutoLev).Covered(),
+      builder
+        .Oscillator("CLK-OSCILLATOR", anchor + (2, 1, 0), (1, TimerUnit.Ticks), (1, TimerUnit.Ticks), clockAutoLev)
+        .Covered(),
       clockManOut)
     .Covered();
   builder
     .Indicator("Clock", anchor + (1, 0, 2),
       builder.Or("CLK", anchor + (1, 0, 0),
-          builder.Oscillator("CLK-OSCILLATOR", anchor + (2, 1, 0), (1, TimerUnit.Ticks), (1, TimerUnit.Ticks), clockAutoLev).Covered(),
+          builder
+            .Oscillator("CLK-OSCILLATOR", anchor + (2, 1, 0), (1, TimerUnit.Ticks), (1, TimerUnit.Ticks), clockAutoLev)
+            .Covered(),
           clockManOut)
-      .Covered(), Color.DeepPink)
+      .Covered(), 
+    Color.DeepPink)
     .Pinned();
   return clock;
 }
