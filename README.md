@@ -30,6 +30,9 @@ var lever = builder.Lever("Lever", (1, 1, 4));
 
 Each component takes, at minimum, `name` (string) and `position` (Vector3Int), as displayed above.
 
+> [!IMPORTANT]  
+> In Timberborn, the Z axis in the upwards axis.
+
 > [!TIP]
 > The position of components uses a struct from called `Vector3Int`. This has been set up so it can implicitally convert from a 3-integer tuple.
 > These 2 return the same thing:
