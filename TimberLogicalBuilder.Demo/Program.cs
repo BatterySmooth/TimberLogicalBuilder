@@ -24,6 +24,8 @@ class Program
     var builder = new LogicBuilder();
     var clock = BuildClock(builder, (5, 5, BaseZ));
 
+    LogicGraphSerializer.settings.faction = Faction.Folktails;
+
     builder.Layout((20, 20, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
     {
       l.Step();

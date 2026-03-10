@@ -282,8 +282,8 @@ private static ISignalSource BuildClock(LogicBuilder builder, Vector3Int anchor)
 Once you've constructed the components and structures you want, you can serialise them and output them directly to a new save like so:
 
 ```csharp
-string InputSave = @"C:\Path\To\Save\Folder\Blank.timber";
-string OutputSave = @"C:\Path\To\Save\Folder\GeneratedSave.timber";
+string InputSave = @"C:\Path\To\Save\File\Blank.timber";
+string OutputSave = @"C:\Path\To\Save\File\GeneratedSave.timber";
 
 var graph = builder.Build();
 var output = LogicGraphSerializer.Serialize(graph);
