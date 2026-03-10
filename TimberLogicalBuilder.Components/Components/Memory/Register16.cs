@@ -1,0 +1,51 @@
+using TimberLogicalBuilder.Components.ComponentSystem;
+using TimberLogicalBuilder.Components.Extensions;
+using TimberLogicalBuilder.Components.Structs;
+using TimberLogicalBuilder.Core.Model;
+
+namespace TimberLogicalBuilder.Components.Components.Memory;
+
+public record Register16Output(Word16[] Channels);
+
+public class Register16(
+  string registerIdentifier,
+  ISignalSource writeEnable,
+  ISignalSource[] channelSelects,
+  Register16Output? channelBus,
+  Word16 input,
+  ISignalSource? reset = null)
+  : BaseComponent<Register16Output>
+{
+  public override Register16Output Build(ComponentContext context)
+  {
+    var layout = context.RequireLayout();
+    var channelCount = channelSelects.Length;
+    var outputs = new ISignalSource[16][];
+
+    for (var bit = 0; bit < 16; bit++)
+    {
+      outputs[bit] = layout.Component(
+          new Register1(
+            $"{registerIdentifier}-{bit:X}",
+            writeEnable,
+            channelSelects,
+            ExtractBitPlane(channelBus, bit, channelCount),
+            input[bit],
+            layout.Cursor,
+            reset))
+        .Channels;
+    }
+    layout.NextRow();
+    return new Register16Output(Word16.PackBitPlanes(outputs));
+  }
+
+  private static ISignalSource?[] ExtractBitPlane(Register16Output? source, int bit, int channelCount)
+  {
+    var result = new ISignalSource?[channelCount];
+    if (source == null)
+      return result;
+    for (var i = 0; i < channelCount; i++)
+      result[i] = source.Channels[i][bit];
+    return result;
+  }
+}
