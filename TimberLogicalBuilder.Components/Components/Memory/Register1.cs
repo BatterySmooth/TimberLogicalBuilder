@@ -10,7 +10,7 @@ public class Register1(
   string cellIdentifier,
   ISignalSource writeEnable,
   ISignalSource[] channelSelects,
-  ISignalSource?[] channelBus,
+  Register1Output? channelBus,
   ISignalSource input,
   Vector3Int? anchor = null,
   ISignalSource? reset = null)
@@ -40,22 +40,20 @@ public class Register1(
       
       localCursor += (0, 0, 2);
 
-      if (channelBus[i] != null)
+      if (channelBus?.Channels[i] != null)
       {
         outputs[i] = context.Builder.Or(
           $"MEM-{cellIdentifier}-CHAN{i}",
           localCursor,
           channelSelect,
-          channelBus[i]!)
+          channelBus.Channels[i])
           .Covered();
       }
       else
       {
-        outputs[i] = context.Builder.Passthrough(
-          $"MEM-{cellIdentifier}-CHAN{i}",
-          localCursor,
-          channelSelect)
-          .Covered();
+        context.Builder.Empty($"MEM-{cellIdentifier}-CHAN{i}", localCursor);
+        // When it's the first cell, pass the AND gate as the bus output
+        outputs[i] = channelSelect;
       }
       
       localCursor += (0, 0, 2);
