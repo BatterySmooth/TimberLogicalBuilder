@@ -14,12 +14,14 @@ class Program
 {
   private const string InputSave = @"C:\Path\To\Save\File\Blank.timber";
   private const string OutputSave = @"C:\Path\To\Save\File\GeneratedSave.timber";
-  private const int BaseZ = 2;
+  private const int BaseZ = 4;
   
   static void Main(string[] args)
   {
     var builder = new LogicBuilder();
     var clock = BuildClock(builder, (5, 5, BaseZ));
+
+    LogicGraphSerializer.settings.faction = Faction.Folktails;
 
     builder.Layout((20, 20, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
     {
