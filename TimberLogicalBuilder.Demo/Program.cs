@@ -14,7 +14,7 @@ class Program
 {
   private const string InputSave = @"C:\Path\To\Save\File\Blank.timber";
   private const string OutputSave = @"C:\Path\To\Save\File\GeneratedSave.timber";
-  private const int BaseZ = 2;
+  private const int BaseZ = 4;
   
   static void Main(string[] args)
   {
