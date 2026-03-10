@@ -6,7 +6,8 @@ namespace TimberLogicalBuilder.Core.Exporting;
 
 public static class TimberSaveWriter
 {
-  public static void WriteEntities(string sourceTimber, string outputTimber, JsonArray entities)
+  // Add the new entities to the existing map file
+  public static void IncludeEntities(string sourceTimber, string outputTimber, JsonArray entities)
   {
     File.Copy(sourceTimber, outputTimber, overwrite: true);
     using var archive = ZipFile.Open(outputTimber, ZipArchiveMode.Update);
@@ -22,11 +23,72 @@ public static class TimberSaveWriter
       root = JsonNode.Parse(json)!.AsObject();
     }
 
-    root["Entities"] = entities;
+    JsonNode existing = root["Entities"]!;
+    JsonArray? existingArray = null;
+
+    if(existing != null && existing.GetType() == typeof(System.Text.Json.Nodes.JsonArray))
+    {
+      existingArray = (JsonArray) existing;
+    }
+
+    root["Entities"] = mergeEntities(existingArray, entities);
 
     worldEntry.Delete();
     var newEntry = archive.CreateEntry("world.json");
     using (var stream = newEntry.Open())
     using (var writer = new StreamWriter(stream)) { writer.Write(root.ToJsonString(new JsonSerializerOptions { WriteIndented = true })); }
+  }
+
+  // Replace entities by name, if they match
+  // Preserve all other entities
+  // Add all completely new entities
+  private static JsonArray mergeEntities(JsonArray? existing, JsonArray incoming)
+  {
+    if (existing == null)
+    {
+      return incoming;
+    }
+
+    JsonArray outgoing = new JsonArray();
+    Dictionary<String, JsonNode> entitiesByName = new Dictionary<String, JsonNode>();
+
+    foreach (var ent in incoming)
+    {
+      String? name = getName(ent);
+      if (name != null) {
+        entitiesByName[name] = ent;
+      }
+
+      // and add it to the outgoing entities
+      outgoing.Add(ent.DeepClone());
+    }
+
+    foreach (var ent in existing)
+    {
+      String? name = getName(ent);
+      
+      // if it's unnamed, just add it
+      if (name == null)
+      {
+        outgoing.Add(ent.DeepClone());
+        continue;
+      }
+
+      // otherwise, if it has a name, make sure it isn't also in the new entities that we already added
+      if (entitiesByName.ContainsKey(name))
+      {
+        continue;
+      }
+
+      // otherwise, it's named, but we aren't replacing it. Add it!
+      outgoing.Add(ent.DeepClone());
+    }
+
+    return outgoing;
+  }
+
+  private static String? getName(JsonNode entity)
+  {
+    return entity["Components"]?["NamedEntity"]?["EntityName"]?.ToString();
   }
 }
