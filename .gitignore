@@ -6,7 +6,7 @@
 # User-specific directory
 [Uu]ser/
 
-**/TimberLogicalBuilder.Demo/Program.cs
+TimberLogicalBuilder.Demo/Program.cs
 
 # User-specific files
 *.suo
