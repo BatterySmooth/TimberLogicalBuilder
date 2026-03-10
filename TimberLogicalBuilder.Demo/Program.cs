@@ -12,8 +12,8 @@ namespace TimberLogicalBuilder.Demo;
 
 class Program
 {
-  private const string InputSave = @"D:\Docs\Documents\Coding\TimberLogicalBuilder\user\testworld.timber";
-  private const string OutputSave = @"D:\Docs\Documents\Coding\TimberLogicalBuilder\user\out\testworld.timber";
+  private const string InputSave = @"C:\Path\To\Save\File\Blank.timber";
+  private const string OutputSave = @"C:\Path\To\Save\File\GeneratedSave.timber";
   private const int BaseZ = 4;
   
   static void Main(string[] args)
