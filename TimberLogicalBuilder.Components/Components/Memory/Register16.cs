@@ -39,13 +39,12 @@ public class Register16(
     return new Register16Output(Word16.PackBitPlanes(outputs));
   }
 
-  private static ISignalSource?[] ExtractBitPlane(Register16Output? source, int bit, int channelCount)
+  private static Register1Output? ExtractBitPlane(Register16Output? source, int bit, int channelCount)
   {
-    var result = new ISignalSource?[channelCount];
-    if (source == null)
-      return result;
+    if (source == null) return null;
+    var result = new ISignalSource[channelCount];
     for (var i = 0; i < channelCount; i++)
       result[i] = source.Channels[i][bit];
-    return result;
+    return new Register1Output(result);
   }
 }
