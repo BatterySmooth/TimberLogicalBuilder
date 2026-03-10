@@ -189,7 +189,7 @@ var grid = builder.Layout((5, 5, BaseZ), LayoutAxis.X, 1, l =>
 });
 ```
 
-### Structures
+### Components
 
 For the sake of this section of the document, we will refer to a group of logical nodes (relays, memory cells, etc) as a component.
 
