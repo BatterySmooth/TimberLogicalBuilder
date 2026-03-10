@@ -17,7 +17,6 @@ public static class LogicGraphSerializer
     {
       var json = SerializeNode(node);
       array.Add(json);
-      // The new stuff:
       if (!node.IsCovered) continue;
       // Specifically indicator uses a 1-height platform
       var singlePlatform = node is Indicator;

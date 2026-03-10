@@ -8,7 +8,6 @@ public static class TimberSaveWriter
 {
   public static void WriteEntities(string sourceTimber, string outputTimber, JsonArray entities)
   {
-    // Copy original save
     File.Copy(sourceTimber, outputTimber, overwrite: true);
     using var archive = ZipFile.Open(outputTimber, ZipArchiveMode.Update);
     var worldEntry = archive.GetEntry("world.json");
@@ -16,7 +15,6 @@ public static class TimberSaveWriter
       throw new InvalidOperationException("world.json not found in timber file.");
     JsonObject root;
 
-    // Read JSON
     using (var stream = worldEntry.Open())
     using (var reader = new StreamReader(stream))
     {
@@ -24,10 +22,8 @@ public static class TimberSaveWriter
       root = JsonNode.Parse(json)!.AsObject();
     }
 
-    // Replace Entities
     root["Entities"] = entities;
 
-    // Overwrite the file inside the zip
     worldEntry.Delete();
     var newEntry = archive.CreateEntry("world.json");
     using (var stream = newEntry.Open())
