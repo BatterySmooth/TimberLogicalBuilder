@@ -18,6 +18,9 @@ class Program
   
   static void Main(string[] args)
   {
+    String infile = args[0] ?? InputSave;
+    String outfile = args[1] ?? OutputSave;
+
     var builder = new LogicBuilder();
     var clock = BuildClock(builder, (5, 5, BaseZ));
 
@@ -72,7 +75,7 @@ class Program
 
     var graph = builder.Build();
     var output = LogicGraphSerializer.Serialize(graph);
-    TimberSaveWriter.WriteEntities(InputSave, OutputSave, output);
+    TimberSaveWriter.IncludeEntities(infile, outfile, output);
   }
 
   private static void BuildLamps(LogicLayout layout, Register16Output bus)
