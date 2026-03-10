@@ -108,6 +108,17 @@ public sealed class LogicLayout
     #endregion
   
 #region Placement
+  #region Empty
+  public Empty Empty(string name)
+    => Build(() => _builder.Empty(name, Position));
+  private Empty Build(Func<Empty> factory)
+  {
+    var empty = factory();
+    AdvancePrimary();
+    return empty;
+  }
+  #endregion
+
   #region Levers
   public Lever Lever(string name)
     => Build(() => _builder.Lever(name, Position));

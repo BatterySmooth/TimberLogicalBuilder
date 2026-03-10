@@ -51,11 +51,9 @@ public class Register1(
       }
       else
       {
-        outputs[i] = context.Builder.Passthrough(
-          $"MEM-{cellIdentifier}-CHAN{i}",
-          localCursor,
-          channelSelect)
-          .Covered();
+        context.Builder.Empty($"MEM-{cellIdentifier}-CHAN{i}", localCursor);
+        // When it's the first cell, pass the AND gate as the bus output
+        outputs[i] = channelSelect;
       }
       
       localCursor += (0, 0, 2);

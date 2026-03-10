@@ -13,6 +13,14 @@ public class LogicBuilder
   public LogicGraph Build() => _graph;
   
 #region General
+  #region Empty
+  public Empty Empty(string name, Vector3Int position)
+  {
+    var empty = new Empty(name, position);
+    return _graph.Add(empty);
+  }
+  #endregion
+
   #region Levers
   public Lever Lever(string name, Vector3Int position)
   {

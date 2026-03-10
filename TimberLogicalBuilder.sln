@@ -6,7 +6,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimberLogicalBuilder.Demo",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{798D5392-C527-4D0A-9F92-31E07CBAEEFC}"
 	ProjectSection(SolutionItems) = preProject
-		REDME.md = REDME.md
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimberLogicalBuilder.Components", "TimberLogicalBuilder.Components\TimberLogicalBuilder.Components.csproj", "{650BF1A6-B28E-41A1-A4D8-808BB00A97A8}"

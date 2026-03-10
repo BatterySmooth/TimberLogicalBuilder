@@ -17,13 +17,10 @@ public static class LogicGraphSerializer
     var array = new JsonArray();
     foreach (var node in graph.Nodes)
     {
-      var json = SerializeNode(node);
-      array.Add(json);
+      if (node.GetType() != typeof(Empty))
+        array.Add(SerializeNode(node));
       if (!node.IsCovered) continue;
-      // Specifically indicator uses a 1-height platform
-      var singlePlatform = node is Indicator;
-      var platform = SerializePlatform(node, singlePlatform);
-      array.Add(platform);
+      array.Add(SerializePlatform(node));
     }
     return array;
   }
@@ -161,7 +158,7 @@ public static class LogicGraphSerializer
     return json;
   }
   
-  private static JsonObject SerializePlatform(LogicNode node, bool single)
+  private static JsonObject SerializePlatform(LogicNode node, bool single = false)
   {
     var json = LoadTemplate(single
       ? Templates.PlatformTemplate
