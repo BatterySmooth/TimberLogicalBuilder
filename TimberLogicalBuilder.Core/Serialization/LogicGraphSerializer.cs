@@ -10,6 +10,8 @@ namespace TimberLogicalBuilder.Core.Serialization;
 
 public static class LogicGraphSerializer
 {
+  public static SerializerSettings settings{get;} = new SerializerSettings();
+
   public static JsonArray Serialize(LogicGraph graph)
   {
     var array = new JsonArray();
@@ -63,7 +65,7 @@ public static class LogicGraphSerializer
   private static void ApplyFaction(JsonObject json)
   {
     var template = json["Template"]!.GetValue<string>();
-    json["Template"] = template.Replace("{{FACTION}}", Templates.FactionName);
+    json["Template"] = template.Replace("{{FACTION}}", settings.faction.ToString());
   }
   
   private static JsonObject SerializeInterval(TimerInterval interval)
