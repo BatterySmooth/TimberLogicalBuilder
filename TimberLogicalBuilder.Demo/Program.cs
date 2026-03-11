@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using TimberLogicalBuilder.Components.Components.Display;
 using TimberLogicalBuilder.Components.Components.Memory;
 using TimberLogicalBuilder.Components.Extensions;
 using TimberLogicalBuilder.Components.Structs;
@@ -72,6 +73,20 @@ class Program
       BuildLamps(l, previous);
     });
     
+
+    builder.Layout((20, 40, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
+    {
+      l.Step();
+      var charInputs = BuildMemorySwitches(l);
+      l.NextRow();
+      l.NextRow();
+
+      var fifteen = l.Component(new Hex215("hex", charInputs)).Channels;
+      l.NextRow();
+      ISignalSource dispPwr = l.Lever("display_on");
+      l.NextRow();
+      l.Component(new Display15("disp", fifteen, dispPwr));
+    });
 
     var graph = builder.Build();
     var output = LogicGraphSerializer.Serialize(graph);
