@@ -7,9 +7,6 @@ public class Relay(string name, Vector3Int pos, RelayMode mode) : LogicNode<Rela
 {
   public RelayMode Mode { get; } = mode;
 
-  public ISignalSource? InputA { get; private set; }
-  public ISignalSource? InputB { get; private set; }
-
   public Relay Inputs(ISignalSource a, ISignalSource? b = null)
   {
     InputA = a;

@@ -6,13 +6,12 @@ namespace TimberLogicalBuilder.Core.Graph;
 
 public class Indicator(string name, Vector3Int pos) : LogicNode(name, pos)
 {
-  public ISignalSource? Input { get; private set; }
   public bool IsPinned { get; private set; }
   public Color? CustomColor { get; private set; }
 
   public Indicator Connect(ISignalSource input)
   {
-    Input = input;
+    InputA = input;
     return this;
   }
   

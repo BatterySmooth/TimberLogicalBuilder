@@ -4,7 +4,7 @@ using TimberLogicalBuilder.Components.Components.Memory;
 using TimberLogicalBuilder.Components.Extensions;
 using TimberLogicalBuilder.Components.Structs;
 using TimberLogicalBuilder.Core.Builder;
-using TimberLogicalBuilder.Core.Exporting;
+using TimberLogicalBuilder.Core.TimberFile;
 using TimberLogicalBuilder.Core.Model;
 using TimberLogicalBuilder.Core.Serialization;
 using TimberLogicalBuilder.Core.Structs;
@@ -90,7 +90,7 @@ class Program
 
     var graph = builder.Build();
     var output = LogicGraphSerializer.Serialize(graph);
-    TimberSaveWriter.IncludeEntities(infile, outfile, output);
+    TimberSaveFile.IncludeEntities(infile, outfile, output);
   }
 
   private static void BuildLamps(LogicLayout layout, Register16Output bus)

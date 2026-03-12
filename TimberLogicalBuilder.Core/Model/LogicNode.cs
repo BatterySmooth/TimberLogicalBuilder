@@ -8,6 +8,12 @@ public abstract class LogicNode(string name, Vector3Int position)
   public string Name { get; set; } = name;
   public Vector3Int Position { get; set; } = position;
   public virtual bool IsCovered { get; protected set; }
+
+  // Okay, so this breaks encapsulation best practices
+  // But having these be always present makes ingestion a ton simpler
+  public ISignalSource? InputA {get; set;}
+  public ISignalSource? InputB {get; set;}
+  public ISignalSource? ResetInput {get; set;}
 }
 
 public abstract class LogicNode<T>(string name, Vector3Int position) : LogicNode(name, position) where T : LogicNode<T>

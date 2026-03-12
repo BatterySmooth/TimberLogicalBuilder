@@ -120,13 +120,13 @@ public static class LogicGraphSerializer
   
   private static JsonObject SerializeTimer(Timer timer)
   {
-    if (timer.Input is null) throw new ArgumentNullException(nameof(timer.Input));
+    if (timer.InputA is null) throw new ArgumentNullException(nameof(timer.InputA));
     var json = LoadTemplate(Templates.TimerTemplate);
     ApplyCommon(json, timer);
     ApplyFaction(json);
     var t = json["Components"]!["Timer"]!;
     t["Mode"] = timer.Mode.ToString();
-    t["Input"] = timer.Input.Id.ToString();
+    t["Input"] = timer.InputA.Id.ToString();
     t["TimerIntervalA"] = SerializeInterval(timer.IntervalA);
     if (timer.IntervalB != null)
       t["TimerIntervalB"] = SerializeInterval(timer.IntervalB.Value);
@@ -137,12 +137,12 @@ public static class LogicGraphSerializer
   
   private static JsonObject SerializeIndicator(Indicator indicator)
   {
-    if (indicator.Input is null) throw new ArgumentNullException(nameof(indicator.Input));
+    if (indicator.InputA is null) throw new ArgumentNullException(nameof(indicator.InputA));
     var json = LoadTemplate(Templates.IndicatorTemplate);
     ApplyCommon(json, indicator);
     ApplyFaction(json);
     json["Components"]!["Automatable"]!["Input"] =
-      indicator.Input.Id.ToString();
+      indicator.InputA.Id.ToString();
     var indicatorNode = json["Components"]!["Indicator"]!.AsObject();
     if (indicator.IsPinned)
       indicatorNode["PinnedMode"] = "Always";

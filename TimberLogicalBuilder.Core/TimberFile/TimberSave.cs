@@ -1,13 +1,53 @@
 using System.Data;
 using System.IO.Compression;
+using System.Numerics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using TimberLogicalBuilder.Core.Graph;
+using TimberLogicalBuilder.Core.Model;
 using TimberLogicalBuilder.Core.Structs;
 
-namespace TimberLogicalBuilder.Core.Exporting;
+namespace TimberLogicalBuilder.Core.TimberFile;
 
-public static class TimberSaveWriter
+public static class TimberSaveFile
 {
+  public static Dictionary<string, LogicNode> LoadLogicNodes(string sourceTimber)
+  {
+    using var archive = ZipFile.Open(sourceTimber, ZipArchiveMode.Update);
+    var worldEntry = archive.GetEntry("world.json");
+    if (worldEntry == null)
+      throw new InvalidOperationException("world.json not found in timber file.");
+    JsonObject root;
+
+    using (var stream = worldEntry.Open())
+    using (var reader = new StreamReader(stream))
+    {
+      string json = reader.ReadToEnd();
+      root = JsonNode.Parse(json)!.AsObject();
+    }
+
+    JsonNode existing = root["Entities"]!;
+    JsonArray? existingArray = null;
+
+    Dictionary<string, LogicNode> nodesByName = new Dictionary<string, LogicNode>();
+
+    if(existing != null && existing.GetType() == typeof(System.Text.Json.Nodes.JsonArray))
+    {
+      EntityIngester ingest = new EntityIngester();
+      existingArray = (JsonArray) existing;
+
+      foreach(JsonNode? entity in existingArray)
+      {
+        if(EntityIngester.isIngestible(entity))
+        {
+          LogicNode node = ingest.ingest(entity);
+          nodesByName[node.Name] = node;
+        }
+      }
+    }
+
+    return nodesByName;
+  } 
   // Add the new entities to the existing map file
   public static void IncludeEntities(string sourceTimber, string outputTimber, JsonArray entities)
   {
@@ -63,13 +103,13 @@ public static class TimberSaveWriter
       }
 
       // record its location
-      if(hasLoc(ent))
+      if(TimberEntity.hasLoc(ent))
       {
-        entitiesByLocation[getLoc(ent)] = ent;
+        entitiesByLocation[TimberEntity.getLoc(ent)] = ent;
       }
 
       // and its name
-      String? name = getName(ent);
+      String? name = TimberEntity.getName(ent);
       if (name != null) {
         entitiesByName[name] = ent;
       }
@@ -85,7 +125,7 @@ public static class TimberSaveWriter
         continue;
       }
 
-      String? name = getName(ent);
+      String? name = TimberEntity.getName(ent);
       
       // if it's unnamed and doesn't collide with anything, add it.
       if (name == null)
@@ -113,54 +153,16 @@ public static class TimberSaveWriter
     return outgoing;
   }
 
-  private static bool checkForLocationCollision(Dictionary<Vector3Int, JsonNode> map, JsonNode entity)
+    private static bool checkForLocationCollision(Dictionary<Vector3Int, JsonNode> map, JsonNode entity)
   {
     // Can't collide with something that doesn't have a location
-    if(!hasLoc(entity))
+    if(!TimberEntity.hasLoc(entity))
     {
       return false;
     }
 
-    Vector3Int loc = getLoc(entity);
+    Vector3Int loc = TimberEntity.getLoc(entity);
 
     return map.ContainsKey(loc);
-  }
-
-  private static String? getName(JsonNode entity)
-  {
-    return entity["Components"]?["NamedEntity"]?["EntityName"]?.ToString();
-  }
-
-  private static String? getTemplate(JsonNode entity)
-  {
-    return entity["Template"]?.ToString();
-  }
-
-// For example: Beavers don't have a BlockObject, they have a Character.
-  private static bool hasLoc(JsonNode entity)
-  {
-    JsonNode? location = entity["Components"]?["BlockObject"]?["Coordinates"];
-
-    return (location != null);
-  }
-  private static Vector3Int getLoc(JsonNode entity)
-  {
-    JsonNode? location = entity["Components"]?["BlockObject"]?["Coordinates"];
-
-    if (location == null)
-    {
-      throw new NoNullAllowedException();
-    }
-
-    int x = (int) (location["X"] ?? "-1");
-    int y = (int) (location["Y"] ?? "-1");
-    int z = (int) (location["Z"] ?? "-1");
-
-    if(x == -1 || y == -1 || z == -1)
-    {
-      throw new NoNullAllowedException();
-    }
-
-    return new Vector3Int(x, y, z);
   }
 }
