@@ -3,6 +3,7 @@ using TimberLogicalBuilder.Components.ComponentSystem;
 using TimberLogicalBuilder.Components.Extensions;
 using TimberLogicalBuilder.Components.Structs;
 using TimberLogicalBuilder.Core.Model;
+using TimberLogicalBuilder.Core.Structs;
 
 namespace TimberLogicalBuilder.Components.Components.Display;
 
@@ -30,12 +31,24 @@ public class Display15(
   {
     var layout = context.RequireLayout();
 
+    Vector3Int primaryDir = layout.PrimaryStep;
+    Vector3Int secondaryDir = layout.SecondaryStep;
+
+    // So we're just going to assume that you aren't doing anything silly and trying to skew displays with odd steps.
+
+    bool mirror = !(
+      primaryDir.X > 0 && secondaryDir.Y > 0 ||
+      primaryDir.Y > 0 && secondaryDir.X < 0 ||
+      primaryDir.X < 0 && secondaryDir.Y < 0 ||
+      primaryDir.Y < 0 && secondaryDir.X > 0
+    );
+
     if(color == null)
     {
       color = Color.FromArgb(0x85, 0xBD, 0xCC);
     }
 
-    for(int u = 0; u < 3; u++)
+    for(int u = (mirror)? 2 : 0; (mirror) ? (u > -1) : (u < 3); u += (mirror) ? -1 : 1)
     {
       for(int v = 0; v < 5; v++)
       {

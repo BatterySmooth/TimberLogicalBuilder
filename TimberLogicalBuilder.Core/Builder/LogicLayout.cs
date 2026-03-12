@@ -14,9 +14,9 @@ public sealed class LogicLayout
     private readonly LogicBuilder _builder;
     private readonly Vector3Int _anchor;
     private Vector3Int _cursor;
-    private readonly Vector3Int _primaryStep;
-    private readonly Vector3Int _secondaryStep;
-    private readonly Vector3Int _tertiaryStep;
+    public readonly Vector3Int PrimaryStep;
+    public readonly Vector3Int SecondaryStep;
+    public readonly Vector3Int TertiaryStep;
     private readonly bool _autoAdvance;
 
     internal LogicLayout(
@@ -30,9 +30,9 @@ public sealed class LogicLayout
       _builder = builder;
       _anchor = anchor;
       _cursor = anchor;
-      _primaryStep = primaryStep;
-      _secondaryStep = secondaryStep;
-      _tertiaryStep =  tertiaryStep;
+      PrimaryStep = primaryStep;
+      SecondaryStep = secondaryStep;
+      TertiaryStep =  tertiaryStep;
       _autoAdvance = autoAdvance;
     }
 
@@ -43,7 +43,7 @@ public sealed class LogicLayout
     {
       if (_autoAdvance)
       {
-        _cursor += _primaryStep;
+        _cursor += PrimaryStep;
         _primaryIndex++;
       }
     }
@@ -57,18 +57,18 @@ public sealed class LogicLayout
     
     public LogicLayout Step(int count = 1)
     {
-      _cursor += _primaryStep * count;
+      _cursor += PrimaryStep * count;
       _primaryIndex += count;
       return this;
     }
 
     public LogicLayout NextRow(bool resetPrimary = true)
     {
-      _cursor += _secondaryStep;
+      _cursor += SecondaryStep;
       _secondaryIndex++;
       if (resetPrimary && _primaryIndex != 0)
       {
-        _cursor -= _primaryStep * _primaryIndex;
+        _cursor -= PrimaryStep * _primaryIndex;
         _primaryIndex = 0;
       }
       return this;
@@ -76,16 +76,16 @@ public sealed class LogicLayout
     
     public LogicLayout NextLayer(bool resetPrimary = true, bool resetSecondary = true)
     {
-      _cursor += _tertiaryStep;
+      _cursor += TertiaryStep;
       _tertiaryIndex++;
       if (resetPrimary && _primaryIndex != 0)
       {
-        _cursor -= _primaryStep * _primaryIndex;
+        _cursor -= PrimaryStep * _primaryIndex;
         _primaryIndex = 0;
       }
       if (resetSecondary && _secondaryIndex != 0)
       {
-        _cursor -= _secondaryStep * _secondaryIndex;
+        _cursor -= SecondaryStep * _secondaryIndex;
         _secondaryIndex = 0;
       }
       return this;
