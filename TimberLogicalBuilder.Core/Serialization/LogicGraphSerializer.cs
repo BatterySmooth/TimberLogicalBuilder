@@ -13,13 +13,17 @@ public static class LogicGraphSerializer
   {
     var array = new JsonArray();
     foreach (var node in graph.Nodes)
+    {
       array.Add(SerializeNode(node));
+      if (node.IsCovered)
+        array.Add(SerializePlatform(node));
+    }
+      
     return array;
   }
   
   private static JsonObject SerializeNode(LogicNode node)
   {
-    if (node.IsEmpty) return SerializePlatform(node);
     if (node.RelayMode != null) return SerializeRelay(node);
     if (node.MemoryMode != null) return SerializeMemory(node);
     if (node.TimerMode != null) return SerializeTimer(node);

@@ -13,24 +13,22 @@ namespace TimberLogicalBuilder.Demo;
 
 class Program
 {
-  private const string InputSave = @"C:\Path\To\Save\File\Blank.timber";
-  private const string OutputSave = @"C:\Path\To\Save\File\GeneratedSave.timber";
-  private const int BaseZ = 4;
+  private const int BaseZ = 2;
   
   static void Main(string[] args)
   {
-    String infile = args[0] ?? InputSave;
-    String outfile = args[1] ?? OutputSave;
+    String infile = args[0];
+    String outfile = args[1];
 
     Console.WriteLine("Loading existing entities...");
     Dictionary<string, LogicNode> nodesByName = TimberSaveFile.LoadLogicNodes(infile);
     Console.WriteLine($"Found {nodesByName.Count} existing nodes.");
 
-    var builder = new LogicBuilder(new LogicBuilderSettings().PreserveExistingConnections(), nodesByName);
-    var clock = BuildClock(builder, (5, 5, BaseZ));
-
     LogicGraphSerializer.settings.faction = Faction.Folktails;
-
+    
+    var builder = new LogicBuilder(new LogicBuilderSettings().PreserveExistingConnections(), nodesByName);
+    
+    var clock = BuildClock(builder, (5, 5, BaseZ));
     builder.Layout((20, 20, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
     {
       l.Step();
@@ -59,38 +57,38 @@ class Program
           placedInRow++;
         }
       }
-
+    
       l.NextRow();
       l.NextRow();
-
+    
       Register16Output? previous = null;
-
+    
       for (var m = 0; m < memCount; m++)
       {
         var memEnable = l.Lever($"MemEnable{m}").Sprung().Pinned();
         var output = l.Component(new Register16($"{m:D2}", memEnable, memSelects[m], previous, inputs));
         previous = output;
       }
-
+    
       l.NextRow();
       
       BuildLamps(l, previous);
     });
     
 
-    builder.Layout((20, 40, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
-    {
-      l.Step();
-      var charInputs = BuildMemorySwitches(l, "CHAR");
-      l.NextRow();
-      l.NextRow();
-
-      var fifteen = l.Component(new Hex215("hex", charInputs)).Channels;
-      l.NextRow();
-      ISignalSource dispPwr = l.Lever("display_on");
-      l.NextRow();
-      l.Component(new Display15("disp", fifteen, dispPwr));
-    });
+    // builder.Layout((20, 40, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
+    // {
+    //   l.Step();
+    //   var charInputs = BuildMemorySwitches(l, "CHAR");
+    //   l.NextRow();
+    //   l.NextRow();
+    //
+    //   var fifteen = l.Component(new Hex215("hex", charInputs)).Channels;
+    //   l.NextRow();
+    //   ISignalSource dispPwr = l.Lever("display_on");
+    //   l.NextRow();
+    //   l.Component(new Display15("disp", fifteen, dispPwr));
+    // });
 
 
     Console.WriteLine("Building entity graph...");
