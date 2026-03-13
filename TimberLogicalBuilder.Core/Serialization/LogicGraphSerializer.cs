@@ -28,7 +28,8 @@ public static class LogicGraphSerializer
     if (node.MemoryMode != null) return SerializeMemory(node);
     if (node.TimerMode != null) return SerializeTimer(node);
     if (node.CustomColor.HasValue) return SerializeIndicator(node);
-    return SerializeLever(node);
+    if (!node.IsEmpty) return SerializeLever(node);
+    throw new ArgumentOutOfRangeException(nameof(node), "Node type not supported");
   }
   
   private static JsonObject LoadTemplate(string template)
