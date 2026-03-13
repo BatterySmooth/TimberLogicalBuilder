@@ -24,7 +24,7 @@ public class Display1(
     // FlipFlop(string name, Vector3Int position, ISignalSource inputA, ISignalSource inputB, ISignalSource? reset = null)
     var mem = context.Builder.Latch(
       identifier + "_mem",
-      layout.Position,
+      layout.Cursor,
       input,
       writeEnable
     ).Covered();
@@ -33,7 +33,7 @@ public class Display1(
     // string name, Vector3Int position, ISignalSource input, Color? color = null
     var disp = context.Builder.Indicator(
       identifier+"_i",
-      layout.Position + (0, 0, 2),
+      layout.Cursor + (0, 0, 2),
       mem,
       color
     );

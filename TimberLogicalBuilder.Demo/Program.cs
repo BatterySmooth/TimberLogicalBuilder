@@ -28,7 +28,7 @@ class Program
     
     var builder = new LogicBuilder(new LogicBuilderSettings().PreserveExistingConnections(), nodesByName);
     
-    var clock = BuildClock(builder, (5, 5, BaseZ));
+    // var clock = BuildClock(builder, (5, 5, BaseZ));
     builder.Layout((20, 20, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
     {
       l.Step();

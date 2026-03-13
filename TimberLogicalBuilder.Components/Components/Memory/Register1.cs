@@ -18,7 +18,7 @@ public class Register1(
 {
   public override Register1Output Build(ComponentContext context)
   {
-    var localCursor = anchor ?? context.RequireLayout().Position;
+    var localCursor = anchor ?? context.RequireLayout().Cursor;
       
     var mem = context.Builder.FlipFlop(
       $"MEM-{cellIdentifier}",

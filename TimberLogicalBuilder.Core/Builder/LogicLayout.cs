@@ -35,7 +35,7 @@ public sealed class LogicLayout
     }
 
     #region Scope
-    public Vector3Int Position => _cursor;
+    // public Vector3Int Position => _cursor;
 
     internal void AdvancePrimary()
     {
@@ -108,52 +108,52 @@ public sealed class LogicLayout
 #region Placement
   #region Empty
   public LogicNode Empty(string name)
-    => Build(() => _builder.Empty(name, Position));
+    => Build(() => _builder.Empty(name, Cursor));
   #endregion
 
   #region Levers
   public LogicNode Lever(string name)
-    => Build(() => _builder.Lever(name, Position));
+    => Build(() => _builder.Lever(name, Cursor));
   #endregion
   
   #region Relays
   public LogicNode Passthrough(string name, ISignalSource? input = null)
-    => Build(() => _builder.Passthrough(name, Position, input));
+    => Build(() => _builder.Passthrough(name, Cursor, input));
   public LogicNode Not(string name, ISignalSource? input = null)
-    => Build(() => _builder.Not(name, Position, input));
+    => Build(() => _builder.Not(name, Cursor, input));
   public LogicNode And(string name, ISignalSource? inputA = null, ISignalSource? inputB = null)
-    => Build(() => _builder.And(name, Position, inputA, inputB));
+    => Build(() => _builder.And(name, Cursor, inputA, inputB));
   public LogicNode Or(string name, ISignalSource? inputA = null, ISignalSource? inputB = null)
-    => Build(() => _builder.Or(name, Position, inputA, inputB));
+    => Build(() => _builder.Or(name, Cursor, inputA, inputB));
   public LogicNode Xor(string name, ISignalSource? inputA = null, ISignalSource? inputB = null)
-    => Build(() => _builder.Xor(name, Position, inputA, inputB));
+    => Build(() => _builder.Xor(name, Cursor, inputA, inputB));
   #endregion
   
   #region Memory
   public LogicNode SetReset(string name, ISignalSource input, ISignalSource? reset = null)
-    => Build(() => _builder.SetReset(name, Position, input, reset));
+    => Build(() => _builder.SetReset(name, Cursor, input, reset));
   public LogicNode Toggle(string name, ISignalSource input, ISignalSource? reset = null)
-    => Build(() => _builder.Toggle(name, Position, input, reset));
+    => Build(() => _builder.Toggle(name, Cursor, input, reset));
   public LogicNode Latch(string name, ISignalSource? inputA = null, ISignalSource? inputB = null, ISignalSource? reset = null)
-    => Build(() => _builder.Latch(name, Position, inputA, inputB, reset));
+    => Build(() => _builder.Latch(name, Cursor, inputA, inputB, reset));
   public LogicNode FlipFlop(string name, ISignalSource? inputA = null, ISignalSource? inputB = null, ISignalSource? reset = null)
-    => Build(() => _builder.FlipFlop(name, Position, inputA, inputB, reset));
+    => Build(() => _builder.FlipFlop(name, Cursor, inputA, inputB, reset));
   #endregion
 
   #region Timer
   public LogicNode Pulse(string name, TimerInterval intervalA, ISignalSource? input = null, ISignalSource? reset = null)
-    => Build(() => _builder.Pulse(name, Position, intervalA, input, reset));
+    => Build(() => _builder.Pulse(name, Cursor, intervalA, input, reset));
   public LogicNode Accumulator(string name, TimerInterval intervalA, ISignalSource? input = null, ISignalSource? reset = null)
-    => Build(() => _builder.Accumulator(name, Position, intervalA, input, reset));
+    => Build(() => _builder.Accumulator(name, Cursor, intervalA, input, reset));
   public LogicNode Delay(string name, TimerInterval intervalA, TimerInterval intervalB, ISignalSource? input = null, ISignalSource? reset = null)
-    => Build(() => _builder.Delay(name, Position, intervalA, intervalB, input, reset));
+    => Build(() => _builder.Delay(name, Cursor, intervalA, intervalB, input, reset));
   public LogicNode Oscillator(string name, TimerInterval intervalA, TimerInterval intervalB, ISignalSource? input = null, ISignalSource? reset = null)
-    => Build(() =>  _builder.Oscillator(name, Position, intervalA, intervalB, input, reset));
+    => Build(() =>  _builder.Oscillator(name, Cursor, intervalA, intervalB, input, reset));
   #endregion
 
   #region Indicators
   public LogicNode Indicator(string name, ISignalSource? input = null, Color? color = null)
-    => Build(() => _builder.Indicator(name, Position, input, color));
+    => Build(() => _builder.Indicator(name, Cursor, input, color));
   #endregion
   
   private LogicNode Build(Func<LogicNode> factory)
