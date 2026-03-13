@@ -2,7 +2,7 @@ using System.Drawing;
 using TimberLogicalBuilder.Components.ComponentSystem;
 using TimberLogicalBuilder.Components.Extensions;
 using TimberLogicalBuilder.Components.Structs;
-using TimberLogicalBuilder.Core.Model;
+using TimberLogicalBuilder.Core.Graph;
 using TimberLogicalBuilder.Core.Structs;
 
 namespace TimberLogicalBuilder.Components.Components.Display;

@@ -2,7 +2,6 @@ using System.Data;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using TimberLogicalBuilder.Core.Graph;
-using TimberLogicalBuilder.Core.Model;
 using TimberLogicalBuilder.Core.Structs;
 
 namespace TimberLogicalBuilder.Core.TimberFile;
@@ -30,7 +29,7 @@ public class EntityIngester
     return match.Success;
   }
 
-  public LogicNode? ingest(JsonNode entity)
+  public LogicNode? Ingest(JsonNode entity)
   {
     string entityType = TimberEntity.getType(entity);
     Match match = Regex.Match(entityType, logicNodeRegex);
@@ -48,14 +47,14 @@ public class EntityIngester
     switch(factionlessType)
     {
       case "Relay":
-        ent = new Relay(name, loc, TimberEntity.getRelayMode(entity));
+        ent = new LogicNode(name, loc).SetRelayMode(TimberEntity.getRelayMode(entity));
         ent.Id = id;
         sourcesById[id] = (ISignalSource) ent;
         inputAId = entity["Components"]?["Relay"]?["InputA"]?.AsValue().ToString();
         inputBId = entity["Components"]?["Relay"]?["InputB"]?.AsValue().ToString();
         break;
       case "Memory":
-        ent = new Memory(name, loc, TimberEntity.getMemoryMode(entity));
+        ent = new LogicNode(name, loc).SetMemoryMode(TimberEntity.getMemoryMode(entity));
         ent.Id = id;
         sourcesById[id] = (ISignalSource) ent;
         inputAId = entity["Components"]?["Memory"]?["InputA"]?.AsValue().ToString();
@@ -65,17 +64,20 @@ public class EntityIngester
       case "Lever":
         Boolean.TryParse(entity["Components"]?["Lever"]?["IsSpringReturn"]?.AsValue().ToString(), out bool isReturn);
         Boolean.TryParse(entity["Components"]?["Lever"]?["isPinned"]?.AsValue().ToString(), out bool isPinned);
-        ent = new Lever(name, loc, isReturn, isPinned);
+        ent = new LogicNode(name, loc).SetIsSpringReturn(isReturn).SetIsPinned(isPinned);
         ent.Id = id;
         sourcesById[id] = (ISignalSource) ent;
         break;
       case "Indicator":
-        ent = new Indicator(name, loc);
+        ent = new LogicNode(name, loc);
         ent.Id = id;
         inputAId = entity["Components"]?["Automatable"]?["Input"]?.AsValue().ToString();
         break;
       case "Timer":
-        ent = new TimberLogicalBuilder.Core.Graph.Timer(name, loc, TimberEntity.getTimerMode(entity), TimberEntity.getTimerInterval(entity, true) ?? new TimerInterval(1, TimerUnit.Hours), TimberEntity.getTimerInterval(entity, false));
+        ent = new LogicNode(name, loc).SetTimerMode(TimberEntity.getTimerMode(entity))
+          .SetTimerIntervalA(TimberEntity.getTimerInterval(entity, true) ?? new TimerInterval(1, TimerUnit.Hours));
+        if (TimberEntity.getTimerInterval(entity, false).HasValue)
+          ent.SetTimerIntervalB(TimberEntity.getTimerInterval(entity, false)!.Value);
         ent.Id = id;
         sourcesById[id] = (ISignalSource) ent;
         break;

@@ -1,5 +1,3 @@
-using TimberLogicalBuilder.Core.Model;
-
 namespace TimberLogicalBuilder.Core.Graph;
 
 public class LogicGraph

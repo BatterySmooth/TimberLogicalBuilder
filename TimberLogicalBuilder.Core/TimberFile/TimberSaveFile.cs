@@ -4,7 +4,6 @@ using System.Numerics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using TimberLogicalBuilder.Core.Graph;
-using TimberLogicalBuilder.Core.Model;
 using TimberLogicalBuilder.Core.Structs;
 
 namespace TimberLogicalBuilder.Core.TimberFile;
@@ -31,16 +30,16 @@ public static class TimberSaveFile
 
     Dictionary<string, LogicNode> nodesByName = new Dictionary<string, LogicNode>();
 
-    if(existing != null && existing.GetType() == typeof(System.Text.Json.Nodes.JsonArray))
+    if(existing is JsonArray array)
     {
       EntityIngester ingest = new EntityIngester();
-      existingArray = (JsonArray) existing;
+      existingArray = array;
 
       foreach(JsonNode? entity in existingArray)
       {
         if(entity != null && EntityIngester.isIngestible(entity))
         {
-          LogicNode? node = ingest.ingest(entity);
+          LogicNode? node = ingest.Ingest(entity);
 
           if(node != null)
           {
@@ -72,12 +71,12 @@ public static class TimberSaveFile
     JsonNode existing = root["Entities"]!;
     JsonArray? existingArray = null;
 
-    if(existing != null && existing.GetType() == typeof(System.Text.Json.Nodes.JsonArray))
+    if(existing is JsonArray array)
     {
-      existingArray = (JsonArray) existing;
+      existingArray = array;
     }
 
-    root["Entities"] = mergeEntities(existingArray, entities);
+    root["Entities"] = MergeEntities(existingArray, entities);
 
     worldEntry.Delete();
     var newEntry = archive.CreateEntry("world.json");
@@ -88,7 +87,7 @@ public static class TimberSaveFile
   // Replace entities by name, if they match
   // Preserve all other entities
   // Add all completely new entities
-  private static JsonArray mergeEntities(JsonArray? existing, JsonArray incoming)
+  private static JsonArray MergeEntities(JsonArray? existing, JsonArray incoming)
   {
     if (existing == null)
     {
@@ -134,7 +133,7 @@ public static class TimberSaveFile
       // if it's unnamed and doesn't collide with anything, add it.
       if (name == null)
       {
-        if(!checkForLocationCollision(entitiesByLocation, ent))
+        if(!CheckForLocationCollision(entitiesByLocation, ent))
         {
           outgoing.Add(ent.DeepClone());
         }
@@ -148,7 +147,7 @@ public static class TimberSaveFile
       }
 
       // otherwise, it's named, but we aren't replacing it. Add it if it doesn't collide!
-      if(!checkForLocationCollision(entitiesByLocation, ent))
+      if(!CheckForLocationCollision(entitiesByLocation, ent))
       {
         outgoing.Add(ent.DeepClone());
       }
@@ -157,7 +156,7 @@ public static class TimberSaveFile
     return outgoing;
   }
 
-    private static bool checkForLocationCollision(Dictionary<Vector3Int, JsonNode> map, JsonNode entity)
+    private static bool CheckForLocationCollision(Dictionary<Vector3Int, JsonNode> map, JsonNode entity)
   {
     // Can't collide with something that doesn't have a location
     if(!TimberEntity.hasLoc(entity))

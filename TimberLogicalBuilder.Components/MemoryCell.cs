@@ -1,5 +1,5 @@
 using TimberLogicalBuilder.Components.ComponentSystem;
-using TimberLogicalBuilder.Core.Model;
+using TimberLogicalBuilder.Core.Graph;
 
 namespace TimberLogicalBuilder.Components;
 

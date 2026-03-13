@@ -4,8 +4,8 @@ using TimberLogicalBuilder.Components.Components.Memory;
 using TimberLogicalBuilder.Components.Extensions;
 using TimberLogicalBuilder.Components.Structs;
 using TimberLogicalBuilder.Core.Builder;
+using TimberLogicalBuilder.Core.Graph;
 using TimberLogicalBuilder.Core.TimberFile;
-using TimberLogicalBuilder.Core.Model;
 using TimberLogicalBuilder.Core.Serialization;
 using TimberLogicalBuilder.Core.Structs;
 
