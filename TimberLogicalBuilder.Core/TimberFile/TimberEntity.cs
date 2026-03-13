@@ -55,9 +55,9 @@ public class TimberEntity
   public static Guid getId(JsonNode entity)
   {
     // An entity without an ID? Unheard of!
-    string id = entity["Id"]?.AsValue().ToString();
+    string id = entity["Id"]?.AsValue().ToString() ?? "[unidentified]";
 
-    if(id != null)
+    if(id != "[unidentified]")
     {
       return Guid.Parse(id);
     }
@@ -90,19 +90,19 @@ public class TimberEntity
 
     if (first)
     {
-      intervalJson = timerData["TimerIntervalA"];
+      intervalJson = timerData?["TimerIntervalA"];
     }
     else
     {
-      intervalJson = timerData["TimerIntervalB"];
+      intervalJson = timerData?["TimerIntervalB"];
     }
 
     if(intervalJson == null)
     {
       return null;
     }
-    Enum.TryParse<TimerUnit>(intervalJson["Type"].AsValue().ToString(), out TimerUnit unit);
-    int.TryParse(intervalJson[unit.ToString()].AsValue().ToString(), out int time);
+    Enum.TryParse<TimerUnit>(intervalJson["Type"]?.AsValue().ToString(), out TimerUnit unit);
+    int.TryParse(intervalJson[unit.ToString()]?.AsValue().ToString(), out int time);
 
     return new TimerInterval(time, unit);
   }

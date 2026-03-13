@@ -145,7 +145,7 @@ public class EntityIngester
       }
 
       // And finally, satisfy anybody looking for this node
-      if(desiredInputs.TryGetValue(id, out HashSet<(LogicNode, int)> seekers))
+      if(desiredInputs.TryGetValue(id, out HashSet<(LogicNode, int)>? seekers))
       {
         foreach ((LogicNode node, int pos) seeker in seekers)
         {

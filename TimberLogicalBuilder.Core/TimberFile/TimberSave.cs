@@ -38,10 +38,14 @@ public static class TimberSaveFile
 
       foreach(JsonNode? entity in existingArray)
       {
-        if(EntityIngester.isIngestible(entity))
+        if(entity != null && EntityIngester.isIngestible(entity))
         {
-          LogicNode node = ingest.ingest(entity);
-          nodesByName[node.Name] = node;
+          LogicNode? node = ingest.ingest(entity);
+
+          if(node != null)
+          {
+            nodesByName[node.Name] = node;
+          }
         }
       }
     }
