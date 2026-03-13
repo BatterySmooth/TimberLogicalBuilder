@@ -4,7 +4,6 @@ using TimberLogicalBuilder.Components.ComponentSystem;
 using TimberLogicalBuilder.Components.Extensions;
 using TimberLogicalBuilder.Components.Structs;
 using TimberLogicalBuilder.Core.Graph;
-using TimberLogicalBuilder.Core.Model;
 
 namespace TimberLogicalBuilder.Components.Components.Display;
 
@@ -161,8 +160,8 @@ public class ASCII215(
   public override ASCII215Out Build(ComponentContext context)
   {
     var layout = context.RequireLayout();
-    Relay[,] relays = new Relay[128,15];
-    Relay[] lastForBit = new Relay[15];
+    LogicNode[,] relays = new LogicNode[128,15];
+    LogicNode[] lastForBit = new LogicNode[15];
 
     // first we generate the matrix, symbol-wise
     for(int bit = 0; bit < 15; bit++)
@@ -171,9 +170,9 @@ public class ASCII215(
       {
         if ((bitmap[sym-32] & (0b100000000000000 >>> bit)) != 0)
         {
-          Relay last = lastForBit[bit];
+          LogicNode last = lastForBit[bit];
 
-          Relay rel = layout.Or((identifier + "_" + sym + "_" + bit), input[sym], last?? input[sym]);
+          LogicNode rel = layout.Or((identifier + "_" + sym + "_" + bit), input[sym], last?? input[sym]);
 
           relays[sym, bit] = rel;
           lastForBit[bit] = rel;

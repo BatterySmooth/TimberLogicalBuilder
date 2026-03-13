@@ -1,10 +1,7 @@
 using System.Drawing;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using TimberLogicalBuilder.Core.Graph;
-using TimberLogicalBuilder.Core.Model;
 using TimberLogicalBuilder.Core.Structs;
-using Timer = TimberLogicalBuilder.Core.Graph.Timer;
 
 namespace TimberLogicalBuilder.Core.Serialization;
 
@@ -17,25 +14,21 @@ public static class LogicGraphSerializer
     var array = new JsonArray();
     foreach (var node in graph.Nodes)
     {
-      if (node.GetType() != typeof(Empty))
-        array.Add(SerializeNode(node));
-      if (!node.IsCovered) continue;
-      array.Add(SerializePlatform(node));
+      array.Add(SerializeNode(node));
+      if (node.IsCovered)
+        array.Add(SerializePlatform(node));
     }
+      
     return array;
   }
   
   private static JsonObject SerializeNode(LogicNode node)
   {
-    return node switch
-    {
-      Lever lever => SerializeLever(lever),
-      Relay relay => SerializeRelay(relay),
-      Memory memory => SerializeMemory(memory),
-      Timer timer => SerializeTimer(timer),
-      Indicator indicator => SerializeIndicator(indicator),
-      _ => throw new NotSupportedException(node.GetType().Name)
-    };
+    if (node.RelayMode != null) return SerializeRelay(node);
+    if (node.MemoryMode != null) return SerializeMemory(node);
+    if (node.TimerMode != null) return SerializeTimer(node);
+    if (node.CustomColor.HasValue) return SerializeIndicator(node);
+    return SerializeLever(node);
   }
   
   private static JsonObject LoadTemplate(string template)
@@ -75,7 +68,7 @@ public static class LogicGraphSerializer
     return $"{color.R:X2}{color.G:X2}{color.B:X2}";
   }
   
-  private static JsonObject SerializeLever(Lever lever)
+  private static JsonObject SerializeLever(LogicNode lever)
   {
     var json = LoadTemplate(Templates.LeverTemplate);
     ApplyCommon(json, lever);
@@ -88,28 +81,28 @@ public static class LogicGraphSerializer
     return json;
   }
   
-  private static JsonObject SerializeRelay(Relay relay)
+  private static JsonObject SerializeRelay(LogicNode relay)
   {
     if (relay.InputA is null) throw new ArgumentNullException(nameof(relay.InputA));
     var json = LoadTemplate(Templates.RelayTemplate);
     ApplyCommon(json, relay);
     ApplyFaction(json);
     var relayNode = json["Components"]!["Relay"]!;
-    relayNode["Mode"] = relay.Mode.ToString();
+    relayNode["Mode"] = relay.RelayMode.ToString();
     relayNode["InputA"] = relay.InputA.Id.ToString();
     if (relay.InputB != null)
       relayNode["InputB"] = relay.InputB.Id.ToString();
     return json;
   }
   
-  private static JsonObject SerializeMemory(Memory memory)
+  private static JsonObject SerializeMemory(LogicNode memory)
   {
     if (memory.InputA is null) throw new ArgumentNullException(nameof(memory.InputA));
     var json = LoadTemplate(Templates.MemoryTemplate);
     ApplyCommon(json, memory);
     ApplyFaction(json);
     var mem = json["Components"]!["Memory"]!;
-    mem["Mode"] = memory.Mode.ToString();
+    mem["Mode"] = memory.MemoryMode.ToString();
     mem["InputA"] = memory.InputA.Id.ToString();
     if (memory.InputB != null)
       mem["InputB"] = memory.InputB.Id.ToString();
@@ -118,16 +111,16 @@ public static class LogicGraphSerializer
     return json;
   }
   
-  private static JsonObject SerializeTimer(Timer timer)
+  private static JsonObject SerializeTimer(LogicNode timer)
   {
     if (timer.InputA is null) throw new ArgumentNullException(nameof(timer.InputA));
     var json = LoadTemplate(Templates.TimerTemplate);
     ApplyCommon(json, timer);
     ApplyFaction(json);
     var t = json["Components"]!["Timer"]!;
-    t["Mode"] = timer.Mode.ToString();
+    t["Mode"] = timer.TimerMode.ToString();
     t["Input"] = timer.InputA.Id.ToString();
-    t["TimerIntervalA"] = SerializeInterval(timer.IntervalA);
+    t["TimerIntervalA"] = SerializeInterval(timer.IntervalA!.Value);
     if (timer.IntervalB != null)
       t["TimerIntervalB"] = SerializeInterval(timer.IntervalB.Value);
     if (timer.ResetInput != null)
@@ -135,7 +128,7 @@ public static class LogicGraphSerializer
     return json;
   }
   
-  private static JsonObject SerializeIndicator(Indicator indicator)
+  private static JsonObject SerializeIndicator(LogicNode indicator)
   {
     if (indicator.InputA is null) throw new ArgumentNullException(nameof(indicator.InputA));
     var json = LoadTemplate(Templates.IndicatorTemplate);
@@ -146,6 +139,7 @@ public static class LogicGraphSerializer
     var indicatorNode = json["Components"]!["Indicator"]!.AsObject();
     if (indicator.IsPinned)
       indicatorNode["PinnedMode"] = "Always";
+    // ReSharper disable once InvertIf
     if (indicator.CustomColor.HasValue)
     {
       var colorObj = json["Components"]!["CustomizableIlluminator"]!["CustomColor"]!.AsObject();

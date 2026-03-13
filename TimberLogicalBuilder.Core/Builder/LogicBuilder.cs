@@ -1,8 +1,6 @@
 using System.Drawing;
 using TimberLogicalBuilder.Core.Graph;
-using TimberLogicalBuilder.Core.Model;
 using TimberLogicalBuilder.Core.Structs;
-using Timer = TimberLogicalBuilder.Core.Graph.Timer;
 
 namespace TimberLogicalBuilder.Core.Builder;
 
@@ -34,7 +32,7 @@ public class LogicBuilder
 #endregion
 
 #region Existing
-  public LogicNode reuse(LogicNode newbie)
+  public LogicNode Reuse(LogicNode newbie)
   {
     if (!_settings.reuseExisting)
     {
@@ -85,90 +83,90 @@ public class LogicBuilder
 
 #region General
   #region Empty
-  public Empty Empty(string name, Vector3Int position)
+  public LogicNode Empty(string name, Vector3Int position)
   {
-    var empty = new Empty(name, position);
+    var empty = new LogicNode(name, position)
+      .SetIsEmpty(true)
+      .Covered();
     return _graph.Add(empty);
   }
   #endregion
 
   #region Levers
-  public Lever Lever(string name, Vector3Int position)
+  public LogicNode Lever(string name, Vector3Int position)
   {
-    var lever = (Lever) reuse(new Lever(name, position));
+    var lever = Reuse(new LogicNode(name, position));
     return _graph.Add(lever);
   }
   #endregion
 
   #region Relays
-  public Relay Passthrough(string name, Vector3Int position, ISignalSource input)
-    => AddSingleRelay(RelayMode.Passthrough, name, position, input);
-  public Relay Not(string name, Vector3Int position, ISignalSource input)
-    => AddSingleRelay(RelayMode.Not, name, position, input);
-  public Relay And(string name, Vector3Int position, ISignalSource inputA, ISignalSource inputB)
-    => AddDualRelay(RelayMode.And, name, position, inputA, inputB);
-  public Relay Or(string name, Vector3Int position, ISignalSource inputA, ISignalSource inputB)
-    => AddDualRelay(RelayMode.Or, name, position, inputA, inputB);
-  public Relay Xor(string name, Vector3Int position, ISignalSource inputA, ISignalSource inputB)
-    => AddDualRelay(RelayMode.Xor, name, position, inputA, inputB);
-  private Relay AddSingleRelay(RelayMode mode, string name, Vector3Int position, ISignalSource inputA)
+  public LogicNode Passthrough(string name, Vector3Int position, ISignalSource? input = null)
+    => AddRelay(RelayMode.Passthrough, name, position, inputA: input);
+  public LogicNode Not(string name, Vector3Int position, ISignalSource? input = null)
+    => AddRelay(RelayMode.Not, name, position, inputA: input);
+  public LogicNode And(string name, Vector3Int position, ISignalSource? inputA = null, ISignalSource? inputB = null)
+    => AddRelay(RelayMode.And, name, position, inputA: inputA, inputB: inputB);
+  public LogicNode Or(string name, Vector3Int position, ISignalSource? inputA = null, ISignalSource? inputB = null)
+    => AddRelay(RelayMode.Or, name, position, inputA: inputA, inputB: inputB);
+  public LogicNode Xor(string name, Vector3Int position, ISignalSource? inputA = null, ISignalSource? inputB = null)
+    => AddRelay(RelayMode.Xor, name, position, inputA: inputA, inputB: inputB);
+  private LogicNode AddRelay(RelayMode mode, string name, Vector3Int position, ISignalSource? inputA = null, ISignalSource? inputB = null)
   {
-    var relay = (Relay) reuse(new Relay(name, position, mode).Inputs(inputA));
-    return _graph.Add(relay);
-  }
-  private Relay AddDualRelay(RelayMode mode, string name, Vector3Int position, ISignalSource inputA, ISignalSource inputB)
-  {
-    var relay = (Relay) reuse(new Relay(name, position, mode).Inputs(inputA, inputB));
+    var relay = Reuse(new LogicNode(name, position)
+      .SetRelayMode(mode));
+    if (inputA != null) relay.ConnectA(inputA);
+    if (inputB != null) relay.ConnectB(inputB);
     return _graph.Add(relay);
   }
   #endregion
   
   #region Memory
-  public Memory SetReset(string name, Vector3Int position, ISignalSource input, ISignalSource? reset = null)
-    => AddSingleMemory(MemoryMode.SetReset, name, position, input, reset);
-  public Memory Toggle(string name, Vector3Int position, ISignalSource input, ISignalSource? reset = null)
-    => AddSingleMemory(MemoryMode.Toggle, name, position, input, reset);
-  public Memory Latch(string name, Vector3Int position, ISignalSource inputA, ISignalSource inputB, ISignalSource? reset = null)
-    => AddDualMemory(MemoryMode.Latch, name, position, inputA, inputB, reset);
-  public Memory FlipFlop(string name, Vector3Int position, ISignalSource inputA, ISignalSource inputB, ISignalSource? reset = null)
-    => AddDualMemory(MemoryMode.FlipFlop, name, position, inputA, inputB, reset);
-  private Memory AddSingleMemory(MemoryMode mode, string name, Vector3Int position, ISignalSource input, ISignalSource? reset = null)
+  public LogicNode SetReset(string name, Vector3Int position, ISignalSource? input = null, ISignalSource? reset = null)
+    => AddMemory(MemoryMode.SetReset, name, position, inputA: input, reset: reset);
+  public LogicNode Toggle(string name, Vector3Int position, ISignalSource? input = null, ISignalSource? reset = null)
+    => AddMemory(MemoryMode.Toggle, name, position, inputA: input, reset: reset);
+  public LogicNode Latch(string name, Vector3Int position, ISignalSource? inputA = null, ISignalSource? inputB = null, ISignalSource? reset = null)
+    => AddMemory(MemoryMode.Latch, name, position, inputA: inputA, inputB: inputB, reset: reset);
+  public LogicNode FlipFlop(string name, Vector3Int position, ISignalSource? inputA = null, ISignalSource? inputB = null, ISignalSource? reset = null)
+    => AddMemory(MemoryMode.FlipFlop, name, position, inputA: inputA, inputB: inputB, reset: reset);
+  private LogicNode AddMemory(MemoryMode mode, string name, Vector3Int position, ISignalSource? inputA = null, ISignalSource? inputB = null, ISignalSource? reset = null)
   {
-    var memory = (Memory) reuse(new Memory(name, position, mode).Inputs(input, null, reset));
-    return _graph.Add(memory);
-  }
-  private Memory AddDualMemory(MemoryMode mode, string name, Vector3Int position, ISignalSource inputA, ISignalSource inputB, ISignalSource? reset = null)
-  {
-    var memory = (Memory) reuse(new Memory(name, position, mode).Inputs(inputA, inputB, reset));
+    var memory = Reuse(new LogicNode(name, position)
+      .SetMemoryMode(mode));
+    if (inputA != null) memory.ConnectA(inputA);
+    if (inputB != null) memory.ConnectB(inputB);
+    if (reset != null) memory.ConnectReset(reset);
     return _graph.Add(memory);
   }
   #endregion
 
   #region Timer
-  public Timer Pulse(string name, Vector3Int position, TimerInterval intervalA, ISignalSource input, ISignalSource? reset = null)
-    => AddSingleTimer(TimerMode.Pulse, name, position, intervalA, input, reset);
-  public Timer Accumulator(string name, Vector3Int position, TimerInterval intervalA, ISignalSource input, ISignalSource? reset = null)
-    => AddSingleTimer(TimerMode.Accumulator, name, position, intervalA, input, reset);
-  public Timer Delay(string name, Vector3Int position, TimerInterval intervalA, TimerInterval intervalB, ISignalSource input, ISignalSource? reset = null)
-    => AddDualTimer(TimerMode.Delay, name, position, intervalA, intervalB, input, reset);
-  public Timer Oscillator(string name, Vector3Int position, TimerInterval intervalA, TimerInterval intervalB, ISignalSource input, ISignalSource? reset = null)
-    => AddDualTimer(TimerMode.Oscillator, name, position, intervalA, intervalB, input, reset);
-  private Timer AddSingleTimer(TimerMode mode, string name, Vector3Int position, TimerInterval intervalA, ISignalSource input, ISignalSource? reset = null)
+  public LogicNode Pulse(string name, Vector3Int position, TimerInterval intervalA, ISignalSource? input = null, ISignalSource? reset = null)
+    => AddTimer(TimerMode.Pulse, name, position, intervalA, input: input, reset: reset);
+  public LogicNode Accumulator(string name, Vector3Int position, TimerInterval intervalA, ISignalSource? input = null, ISignalSource? reset = null)
+    => AddTimer(TimerMode.Accumulator, name, position, intervalA, input: input, reset: reset);
+  public LogicNode Delay(string name, Vector3Int position, TimerInterval intervalA, TimerInterval intervalB, ISignalSource? input = null, ISignalSource? reset = null)
+    => AddTimer(TimerMode.Delay, name, position, intervalA, intervalB, input: input, reset: reset);
+  public LogicNode Oscillator(string name, Vector3Int position, TimerInterval intervalA, TimerInterval intervalB, ISignalSource? input = null, ISignalSource? reset = null)
+    => AddTimer(TimerMode.Oscillator, name, position, intervalA, intervalB, input: input, reset: reset);
+  private LogicNode AddTimer(TimerMode mode, string name, Vector3Int position, TimerInterval intervalA, TimerInterval? intervalB = null, ISignalSource? input = null, ISignalSource? reset = null)
   {
-    var delay = (Timer) reuse(new Timer(name, position, mode, intervalA).Inputs(input, reset));
-    return _graph.Add(delay);
-  }
-  private Timer AddDualTimer(TimerMode mode, string name, Vector3Int position, TimerInterval intervalA, TimerInterval intervalB, ISignalSource input, ISignalSource? reset = null)
-  {
-    var delay = (Timer) reuse(new Timer(name, position, mode, intervalA, intervalB).Inputs(input, reset));
+    var delay = Reuse(new LogicNode(name, position)
+      .SetTimerMode(mode)
+      .SetTimerIntervalA(intervalA));
+    if (intervalB.HasValue) delay.SetTimerIntervalB(intervalB.Value);
+    if (input != null) delay.ConnectA(input);
+    if (reset != null) delay.ConnectReset(reset);
     return _graph.Add(delay);
   }
   #endregion
 
   #region Indicators
-  public Indicator Indicator(string name, Vector3Int position, ISignalSource input, Color? color = null)
+  public LogicNode Indicator(string name, Vector3Int position, ISignalSource? input = null, Color? color = null)
   {
-    var indicator = (Indicator) reuse(new Indicator(name, position).Connect(input));
+    var indicator = Reuse(new LogicNode(name, position));
+    if (input is not null) indicator.ConnectA(input);
     if (color is not null) indicator.Color(color.Value);
     _graph.Add(indicator);
     return indicator;

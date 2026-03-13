@@ -1,8 +1,6 @@
 using System.Drawing;
 using TimberLogicalBuilder.Core.Graph;
-using TimberLogicalBuilder.Core.Model;
 using TimberLogicalBuilder.Core.Structs;
-using Timer = TimberLogicalBuilder.Core.Graph.Timer;
 
 namespace TimberLogicalBuilder.Core.Builder;
 
@@ -109,89 +107,60 @@ public sealed class LogicLayout
   
 #region Placement
   #region Empty
-  public Empty Empty(string name)
+  public LogicNode Empty(string name)
     => Build(() => _builder.Empty(name, Position));
-  private Empty Build(Func<Empty> factory)
-  {
-    var empty = factory();
-    AdvancePrimary();
-    return empty;
-  }
   #endregion
 
   #region Levers
-  public Lever Lever(string name)
+  public LogicNode Lever(string name)
     => Build(() => _builder.Lever(name, Position));
-  private Lever Build(Func<Lever> factory)
-  {
-    var lever = factory();
-    AdvancePrimary();
-    return lever;
-  }
   #endregion
   
   #region Relays
-  public Relay Passthrough(string name, ISignalSource input)
+  public LogicNode Passthrough(string name, ISignalSource? input = null)
     => Build(() => _builder.Passthrough(name, Position, input));
-  public Relay Not(string name, ISignalSource input)
+  public LogicNode Not(string name, ISignalSource? input = null)
     => Build(() => _builder.Not(name, Position, input));
-  public Relay And(string name, ISignalSource inputA, ISignalSource inputB)
+  public LogicNode And(string name, ISignalSource? inputA = null, ISignalSource? inputB = null)
     => Build(() => _builder.And(name, Position, inputA, inputB));
-  public Relay Or(string name, ISignalSource inputA, ISignalSource inputB)
+  public LogicNode Or(string name, ISignalSource? inputA = null, ISignalSource? inputB = null)
     => Build(() => _builder.Or(name, Position, inputA, inputB));
-  public Relay Xor(string name, ISignalSource inputA, ISignalSource inputB)
+  public LogicNode Xor(string name, ISignalSource? inputA = null, ISignalSource? inputB = null)
     => Build(() => _builder.Xor(name, Position, inputA, inputB));
-  private Relay Build(Func<Relay> factory)
-  {
-    var relay = factory();
-    AdvancePrimary();
-    return relay;
-  }
   #endregion
   
   #region Memory
-  public Memory SetReset(string name, ISignalSource input, ISignalSource? reset = null)
+  public LogicNode SetReset(string name, ISignalSource input, ISignalSource? reset = null)
     => Build(() => _builder.SetReset(name, Position, input, reset));
-  public Memory Toggle(string name, ISignalSource input, ISignalSource? reset = null)
+  public LogicNode Toggle(string name, ISignalSource input, ISignalSource? reset = null)
     => Build(() => _builder.Toggle(name, Position, input, reset));
-  public Memory Latch(string name, ISignalSource inputA, ISignalSource inputB, ISignalSource? reset = null)
+  public LogicNode Latch(string name, ISignalSource? inputA = null, ISignalSource? inputB = null, ISignalSource? reset = null)
     => Build(() => _builder.Latch(name, Position, inputA, inputB, reset));
-  public Memory FlipFlop(string name, ISignalSource inputA, ISignalSource inputB, ISignalSource? reset = null)
+  public LogicNode FlipFlop(string name, ISignalSource? inputA = null, ISignalSource? inputB = null, ISignalSource? reset = null)
     => Build(() => _builder.FlipFlop(name, Position, inputA, inputB, reset));
-  private Memory Build(Func<Memory> factory)
-  {
-    var memory = factory();
-    AdvancePrimary();
-    return memory;
-  }
   #endregion
 
   #region Timer
-  public Timer Pulse(string name, TimerInterval intervalA, ISignalSource input, ISignalSource? reset = null)
+  public LogicNode Pulse(string name, TimerInterval intervalA, ISignalSource? input = null, ISignalSource? reset = null)
     => Build(() => _builder.Pulse(name, Position, intervalA, input, reset));
-  public Timer Accumulator(string name, TimerInterval intervalA, ISignalSource input, ISignalSource? reset = null)
+  public LogicNode Accumulator(string name, TimerInterval intervalA, ISignalSource? input = null, ISignalSource? reset = null)
     => Build(() => _builder.Accumulator(name, Position, intervalA, input, reset));
-  public Timer Delay(string name, TimerInterval intervalA, TimerInterval intervalB, ISignalSource input, ISignalSource? reset = null)
+  public LogicNode Delay(string name, TimerInterval intervalA, TimerInterval intervalB, ISignalSource? input = null, ISignalSource? reset = null)
     => Build(() => _builder.Delay(name, Position, intervalA, intervalB, input, reset));
-  public Timer Oscillator(string name, TimerInterval intervalA, TimerInterval intervalB, ISignalSource input, ISignalSource? reset = null)
+  public LogicNode Oscillator(string name, TimerInterval intervalA, TimerInterval intervalB, ISignalSource? input = null, ISignalSource? reset = null)
     => Build(() =>  _builder.Oscillator(name, Position, intervalA, intervalB, input, reset));
-  private Timer Build(Func<Timer> factory)
-  {
-    var timer = factory();
-    AdvancePrimary();
-    return timer;
-  }
   #endregion
 
   #region Indicators
-  public Indicator Indicator(string name, ISignalSource input, Color? color = null)
+  public LogicNode Indicator(string name, ISignalSource? input = null, Color? color = null)
     => Build(() => _builder.Indicator(name, Position, input, color));
-  private Indicator Build(Func<Indicator> factory)
-  {
-    var indicator = factory();
-    AdvancePrimary();
-    return indicator;
-  }
   #endregion
+  
+  private LogicNode Build(Func<LogicNode> factory)
+  {
+    var node = factory();
+    AdvancePrimary();
+    return node;
+  }
 #endregion
 }

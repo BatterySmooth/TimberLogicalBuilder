@@ -1,7 +1,7 @@
 using TimberLogicalBuilder.Components.ComponentSystem;
 using TimberLogicalBuilder.Components.Extensions;
 using TimberLogicalBuilder.Components.Structs;
-using TimberLogicalBuilder.Core.Model;
+using TimberLogicalBuilder.Core.Graph;
 
 namespace TimberLogicalBuilder.Components.Components.Memory;
 

@@ -1,4 +1,4 @@
-namespace TimberLogicalBuilder.Core.Model;
+namespace TimberLogicalBuilder.Core.Graph;
 
 public interface ISignalSource
 {
