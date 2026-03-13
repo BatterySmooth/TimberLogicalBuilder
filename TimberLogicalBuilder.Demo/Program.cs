@@ -22,6 +22,10 @@ class Program
     String infile = args[0] ?? InputSave;
     String outfile = args[1] ?? OutputSave;
 
+    Console.WriteLine("Loading existing entities...");
+    Dictionary<string, LogicNode> nodesByName = TimberSaveFile.LoadLogicNodes(infile);
+    Console.WriteLine($"Found {nodesByName.Count} existing nodes.");
+
     var builder = new LogicBuilder();
     var clock = BuildClock(builder, (5, 5, BaseZ));
 
@@ -88,8 +92,14 @@ class Program
       l.Component(new Display15("disp", fifteen, dispPwr));
     });
 
+
+    Console.WriteLine("Building entity graph...");
+
     var graph = builder.Build();
     var output = LogicGraphSerializer.Serialize(graph);
+
+    Console.WriteLine($"Writing to file: {outfile}");
+
     TimberSaveFile.IncludeEntities(infile, outfile, output);
   }
 
