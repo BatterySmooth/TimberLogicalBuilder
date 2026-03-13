@@ -25,49 +25,41 @@ public class Display15(
   Word15 input, 
   ISignalSource writeEnable, 
   Color? color = null)
-   : BaseComponent<zeroBitOutput>
+   : BaseComponent<ZeroBitOutput>
 {
-  public override zeroBitOutput Build(ComponentContext context)
+  public override ZeroBitOutput Build(ComponentContext context)
   {
-    var layout = context.RequireLayout();
-
-    Vector3Int primaryDir = layout.PrimaryStep;
-    Vector3Int secondaryDir = layout.SecondaryStep;
-
-    // So we're just going to assume that you aren't doing anything silly and trying to skew displays with odd steps.
-
-    bool mirror = !(
-      primaryDir.X > 0 && secondaryDir.Y > 0 ||
-      primaryDir.Y > 0 && secondaryDir.X < 0 ||
-      primaryDir.X < 0 && secondaryDir.Y < 0 ||
-      primaryDir.Y < 0 && secondaryDir.X > 0
-    );
-
-    if(color == null)
+    context.Builder.Layout(context.Position, context.Axes, l =>
     {
-      color = Color.FromArgb(0x85, 0xBD, 0xCC);
-    }
+      var primaryDir = l.Axes.Primary;
+      var secondaryDir = l.Axes.Secondary;
 
-    for(int u = (mirror)? 2 : 0; (mirror) ? (u > -1) : (u < 3); u += (mirror) ? -1 : 1)
-    {
-      for(int v = 0; v < 5; v++)
-      {
-      layout.Component(
-        new Display1(
-        identifier + "_" + v + "_" + u,
-        input[v*3+u],
-        writeEnable,
-        color
-        )
+      // So we're just going to assume that you aren't doing anything silly and trying to skew displays with odd steps.
+      var mirror = !(
+        primaryDir.X > 0 && secondaryDir.Y > 0 ||
+        primaryDir.Y > 0 && secondaryDir.X < 0 ||
+        primaryDir.X < 0 && secondaryDir.Y < 0 ||
+        primaryDir.Y < 0 && secondaryDir.X > 0
       );
 
-      layout.Step();
+      for(var u = (mirror)? 2 : 0; (mirror) ? (u > -1) : (u < 3); u += (mirror) ? -1 : 1)
+      {
+        for(var v = 0; v < 5; v++)
+        {
+          l.Component(
+            new Display1(
+              identifier + "_" + v + "_" + u,
+              input[v*3+u],
+              writeEnable,
+              color ?? Color.FromArgb(0x85, 0xBD, 0xCC))
+          );
+          l.Step();
+        }
+        l.NextRow();
       }
+    });
 
-      layout.NextRow();
-    }
-
-    return new zeroBitOutput();
+    return new ZeroBitOutput();
   }
 
 }

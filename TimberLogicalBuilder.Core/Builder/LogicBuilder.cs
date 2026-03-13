@@ -175,19 +175,9 @@ public class LogicBuilder
 #endregion
 
 #region Layout
-  public LogicBuilder Layout(
-    Vector3Int anchor,
-    Vector3Int primaryStep,
-    Vector3Int secondaryStep,
-    Vector3Int tertiaryStep,
-    Action<LogicLayout> layout)
+  public LogicBuilder Layout(Vector3Int anchor, LayoutAxes axes, Action<LogicLayout> layout)
   {
-    var scope = new LogicLayout(
-      this,
-      anchor,
-      primaryStep,
-      secondaryStep,
-      tertiaryStep);
+    var scope = new LogicLayout(this, anchor, axes);
     layout(scope);
     return this;
   }
@@ -209,7 +199,7 @@ public class LogicBuilder
     var secondary = AxisVector(secondaryAxis);
     var tertiary = AxisVector(tertiaryAxis);
     
-    return Layout(anchor, primary, secondary, tertiary, layout);
+    return Layout(anchor, (primary, secondary, tertiary), layout);
     
     Vector3Int AxisVector(LayoutAxis axis) => axis switch
     {

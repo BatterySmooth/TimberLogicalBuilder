@@ -1,4 +1,5 @@
 using TimberLogicalBuilder.Components.ComponentSystem;
+using TimberLogicalBuilder.Core.Builder;
 using TimberLogicalBuilder.Core.Graph;
 using TimberLogicalBuilder.Core.Structs;
 
@@ -18,48 +19,40 @@ public class Register1(
 {
   public override Register1Output Build(ComponentContext context)
   {
-    var localCursor = anchor ?? context.RequireLayout().Cursor;
-      
-    var mem = context.Builder.FlipFlop(
-      $"MEM-{cellIdentifier}",
-      localCursor + (0, 0, 4 * channelSelects.Length),
-      input,
-      writeEnable,
-      reset);
-
-    var outputs = new ISignalSource[channelSelects.Length];
-
-    for (var i = 0; i < channelSelects.Length; i++)
+    var outputs = new LogicNode[channelSelects.Length];
+    
+    context.Builder.Layout(context.Position, LayoutAxis.Z, LayoutAxis.X, 1, l =>
     {
-      var channelSelect = context.Builder.And(
-          $"MEM-{cellIdentifier}-CHAN{i}-SEL",
-          localCursor,
-          mem,
-          channelSelects[i])
-        .Covered();
-      
-      localCursor += (0, 0, 2);
-
-      if (channelBus?.Channels[i] != null)
+      for (var i = 0; i < channelSelects.Length; i++)
       {
-        outputs[i] = context.Builder.Or(
-          $"MEM-{cellIdentifier}-CHAN{i}-OUT",
-          localCursor,
-          channelSelect,
-          channelBus.Channels[i])
+        var channelSelect = l.And($"MEM-{cellIdentifier}-CHAN{i}-SEL")
+          .ConnectB(channelSelects[i])
           .Covered();
+        
+        if (channelBus?.Channels[i] != null)
+        {
+          outputs[i] = l.Or(
+              $"MEM-{cellIdentifier}-CHAN{i}-OUT")
+            .ConnectA(channelSelect)
+            .ConnectB(channelBus.Channels[i])
+            .Covered();
+        }
+        else
+        {
+          l.Empty($"MEM-{cellIdentifier}-CHAN{i}");
+          // When it's the first cell, pass the AND gate as the bus output
+          outputs[i] = channelSelect;
+        }
       }
-      else
-      {
-        context.Builder.Empty($"MEM-{cellIdentifier}-CHAN{i}", localCursor);
-        // When it's the first cell, pass the AND gate as the bus output
-        outputs[i] = channelSelect;
-      }
-      
-      localCursor += (0, 0, 2);
-    }
 
-    context.RequireLayout().Step();
-    return new Register1Output(outputs);
+      var mem = l.FlipFlop($"MEM-{cellIdentifier}");
+      
+      foreach (var output in outputs)
+      {
+        output.ConnectA(mem);
+      }
+    });
+    
+    return new Register1Output(outputs.Cast<ISignalSource>().ToArray());
   }
 }

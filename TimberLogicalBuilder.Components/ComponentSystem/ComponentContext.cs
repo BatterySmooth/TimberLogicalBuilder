@@ -1,48 +1,18 @@
 using TimberLogicalBuilder.Core.Builder;
+using TimberLogicalBuilder.Core.Structs;
 
 namespace TimberLogicalBuilder.Components.ComponentSystem;
 
 public sealed class ComponentContext
 {
   public LogicBuilder Builder { get; }
-  public LogicLayout? Layout { get; }
+  public Vector3Int Position { get; }
+  public LayoutAxes Axes { get; }
 
-  internal ComponentContext(LogicBuilder builder)
+  internal ComponentContext(LogicBuilder builder, Vector3Int position, LayoutAxes axes)
   {
     Builder = builder;
+    Position = position;
+    Axes = axes;
   }
-
-  internal ComponentContext(LogicLayout layout)
-  {
-    Builder = layout.Builder;
-    Layout = layout;
-  }
-
-  public bool HasLayout => Layout != null;
-
-  public LogicLayout RequireLayout()
-    => Layout ?? throw new InvalidOperationException("Component requires a layout context.");
-  
-  public T LayoutScope<T>(Func<LogicBuilder, LogicLayout, T> scope)
-  {
-    var layout = RequireLayout();
-    return scope(Builder, layout);
-  }
-  
-  // public T LayoutScope<T>(
-  //   Vector3Int primaryStep,
-  //   Vector3Int secondaryStep,
-  //   Vector3Int tertiaryStep,
-  //   Func<LogicLayout, T> scope)
-  // {
-  //   var parent = RequireLayout();
-  //   var nested = new LogicLayout(
-  //     Builder,
-  //     parent.Cursor,
-  //     primaryStep,
-  //     secondaryStep,
-  //     tertiaryStep,
-  //     autoAdvance: false);
-  //   return scope(nested);
-  // }
 }

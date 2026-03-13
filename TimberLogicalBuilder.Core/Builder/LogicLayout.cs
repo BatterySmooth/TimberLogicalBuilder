@@ -12,36 +12,28 @@ public sealed class LogicLayout
     private readonly LogicBuilder _builder;
     private readonly Vector3Int _anchor;
     private Vector3Int _cursor;
-    public readonly Vector3Int PrimaryStep;
-    public readonly Vector3Int SecondaryStep;
-    public readonly Vector3Int TertiaryStep;
+    public readonly LayoutAxes Axes;
     private readonly bool _autoAdvance;
 
     internal LogicLayout(
       LogicBuilder builder,
       Vector3Int anchor,
-      Vector3Int primaryStep,
-      Vector3Int secondaryStep,
-      Vector3Int tertiaryStep,
+      LayoutAxes axes,
       bool autoAdvance = true)
     {
       _builder = builder;
       _anchor = anchor;
       _cursor = anchor;
-      PrimaryStep = primaryStep;
-      SecondaryStep = secondaryStep;
-      TertiaryStep =  tertiaryStep;
+      Axes = axes;
       _autoAdvance = autoAdvance;
     }
 
     #region Scope
-    // public Vector3Int Position => _cursor;
-
     internal void AdvancePrimary()
     {
       if (_autoAdvance)
       {
-        _cursor += PrimaryStep;
+        _cursor += Axes.Primary;
         _primaryIndex++;
       }
     }
@@ -55,18 +47,18 @@ public sealed class LogicLayout
     
     public LogicLayout Step(int count = 1)
     {
-      _cursor += PrimaryStep * count;
+      _cursor += Axes.Primary * count;
       _primaryIndex += count;
       return this;
     }
 
     public LogicLayout NextRow(bool resetPrimary = true)
     {
-      _cursor += SecondaryStep;
+      _cursor += Axes.Secondary;
       _secondaryIndex++;
       if (resetPrimary && _primaryIndex != 0)
       {
-        _cursor -= PrimaryStep * _primaryIndex;
+        _cursor -= Axes.Primary * _primaryIndex;
         _primaryIndex = 0;
       }
       return this;
@@ -74,16 +66,16 @@ public sealed class LogicLayout
     
     public LogicLayout NextLayer(bool resetPrimary = true, bool resetSecondary = true)
     {
-      _cursor += TertiaryStep;
+      _cursor += Axes.Tertiary;
       _tertiaryIndex++;
       if (resetPrimary && _primaryIndex != 0)
       {
-        _cursor -= PrimaryStep * _primaryIndex;
+        _cursor -= Axes.Primary * _primaryIndex;
         _primaryIndex = 0;
       }
       if (resetSecondary && _secondaryIndex != 0)
       {
-        _cursor -= SecondaryStep * _secondaryIndex;
+        _cursor -= Axes.Secondary * _secondaryIndex;
         _secondaryIndex = 0;
       }
       return this;

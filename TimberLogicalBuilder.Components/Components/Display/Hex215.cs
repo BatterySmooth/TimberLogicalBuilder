@@ -28,41 +28,42 @@ public class Hex215(
   Word16 input
 ) : BaseComponent<Hex215Out>
 {
-  private static int[] bitmap = {
+  private static int[] _bitmap =
+  [
     0b010101101101010, 0b010110010010111, 0b010101001010111, 0b111001111001111, 
     0b101101111001001, 0b111100111001110, 0b111100111101111, 0b111001010010100,
     0b010101111101010, 0b111101111001111, 0b010101111101101, 0b110101111101110, 
-    0b011100100100011, 0b110101101101110, 0b111100111100111, 0b111100111100100};
+    0b011100100100011, 0b110101101101110, 0b111100111100111, 0b111100111100100
+  ];
 
   public override Hex215Out Build(ComponentContext context)
   {
-    var layout = context.RequireLayout();
-    LogicNode[,] relays = new LogicNode[16,15];
-    LogicNode[] lastForBit = new LogicNode[15];
-
-    // first we generate the matrix, symbol-wise
-    for(int bit = 0; bit < 15; bit++)
+    var relays = new LogicNode[16,15];
+    var lastForBit = new LogicNode[15];
+    
+    context.Builder.Layout(context.Position, context.Axes, l =>
     {
-      for(int sym = 0; sym < 16; sym++)
+      // first we generate the matrix, symbol-wise
+      for(int bit = 0; bit < 15; bit++)
       {
-        if ((bitmap[sym] & (0b100000000000000 >>> bit)) != 0)
+        for(int sym = 0; sym < 16; sym++)
         {
-          LogicNode last = lastForBit[bit];
-
-          LogicNode rel = layout.Or((identifier + "_" + sym + "_" + bit), input[sym], last?? input[sym]);
-
-          relays[sym, bit] = rel;
-          lastForBit[bit] = rel;
+          if ((_bitmap[sym] & (0b100000000000000 >>> bit)) != 0)
+          {
+            var last = lastForBit[bit];
+            var rel = l.Or((identifier + "_" + sym + "_" + bit), input[sym], last ?? input[sym]);
+            relays[sym, bit] = rel;
+            lastForBit[bit] = rel;
+          }
+          else
+          {
+            l.Step();
+          }
         }
-        else
-        {
-          layout.Step();
-        }
+        l.NextRow();
       }
-      
-      layout.NextRow();
-    }
+    });
 
-    return new Hex215Out(Word15.FromArray(lastForBit));
+    return new Hex215Out(Word15.FromArray(lastForBit.Cast<ISignalSource>().ToArray()));
   }
 }

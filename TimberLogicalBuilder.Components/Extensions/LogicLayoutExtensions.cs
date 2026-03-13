@@ -7,7 +7,7 @@ public static class LogicLayoutExtensions
 {
   public static TOutput Component<TOutput>(this LogicLayout layout, BaseComponent<TOutput> component)
   {
-    var ctx = new ComponentContext(layout);
-    return component.Build(ctx);
+    var context = new ComponentContext(layout.Builder, layout.Cursor, layout.Axes);
+    return component.Build(context);
   }
 }
