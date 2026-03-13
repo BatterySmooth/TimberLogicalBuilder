@@ -26,7 +26,7 @@ class Program
     Dictionary<string, LogicNode> nodesByName = TimberSaveFile.LoadLogicNodes(infile);
     Console.WriteLine($"Found {nodesByName.Count} existing nodes.");
 
-    var builder = new LogicBuilder();
+    var builder = new LogicBuilder(new LogicBuilderSettings().PreserveExistingConnections(), nodesByName);
     var clock = BuildClock(builder, (5, 5, BaseZ));
 
     LogicGraphSerializer.settings.faction = Faction.Folktails;

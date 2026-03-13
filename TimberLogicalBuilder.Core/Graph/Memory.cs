@@ -14,6 +14,14 @@ public class Memory(string name, Vector3Int pos, MemoryMode mode) : LogicNode<Me
     return this;
   }
 
+  public Memory Inputs(ISignalSource a, ISignalSource? b = null, ISignalSource? reset = null)
+  {
+    InputA = a;
+    InputB = b;
+    ResetInput = reset;
+    return this;
+  }
+
   public Memory Reset(ISignalSource r)
   {
     ResetInput = r;

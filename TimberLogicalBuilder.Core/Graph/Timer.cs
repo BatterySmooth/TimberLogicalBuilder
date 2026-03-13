@@ -20,4 +20,11 @@ public class Timer(string name, Vector3Int pos, TimerMode mode, TimerInterval in
     ResetInput = input;
     return this;
   }
+
+  public Timer Inputs(ISignalSource? input, ISignalSource? reset)
+  {
+    InputA = input;
+    ResetInput = reset;
+    return this;
+  }
 }
