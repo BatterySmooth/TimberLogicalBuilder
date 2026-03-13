@@ -43,7 +43,7 @@ public class Register1(
       if (channelBus?.Channels[i] != null)
       {
         outputs[i] = context.Builder.Or(
-          $"MEM-{cellIdentifier}-CHAN{i}",
+          $"MEM-{cellIdentifier}-CHAN{i}-OUT",
           localCursor,
           channelSelect,
           channelBus.Channels[i])

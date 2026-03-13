@@ -34,7 +34,7 @@ class Program
     builder.Layout((20, 20, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
     {
       l.Step();
-      var inputs = BuildMemorySwitches(l);
+      var inputs = BuildMemorySwitches(l, "MEM");
       l.NextRow();
       l.NextRow();
       
@@ -81,7 +81,7 @@ class Program
     builder.Layout((20, 40, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
     {
       l.Step();
-      var charInputs = BuildMemorySwitches(l);
+      var charInputs = BuildMemorySwitches(l, "CHAR");
       l.NextRow();
       l.NextRow();
 
@@ -105,35 +105,37 @@ class Program
 
   private static void BuildLamps(LogicLayout layout, Register16Output bus)
   {
-    foreach (var t in bus.Channels)
+    for(int i = 0; i < bus.Channels.Length; i++)
     {
+      var t = bus.Channels[i];
+
       layout.Step();
-      layout.Indicator("BUS-00", t.B0,  Color.DeepPink);
-      layout.Indicator("BUS-01", t.B1,  Color.DeepPink);
-      layout.Indicator("BUS-02", t.B2,  Color.DeepPink);
-      layout.Indicator("BUS-03", t.B3,  Color.DeepPink);
-      layout.Indicator("BUS-04", t.B4,  Color.DeepPink);
-      layout.Indicator("BUS-05", t.B5,  Color.DeepPink);
-      layout.Indicator("BUS-06", t.B6,  Color.DeepPink);
-      layout.Indicator("BUS-07", t.B7,  Color.DeepPink);
-      layout.Indicator("BUS-08", t.B8,  Color.DeepPink);
-      layout.Indicator("BUS-09", t.B9,  Color.DeepPink);
-      layout.Indicator("BUS-10", t.B10, Color.DeepPink);
-      layout.Indicator("BUS-11", t.B11, Color.DeepPink);
-      layout.Indicator("BUS-12", t.B12, Color.DeepPink);
-      layout.Indicator("BUS-13", t.B13, Color.DeepPink);
-      layout.Indicator("BUS-14", t.B14, Color.DeepPink);
-      layout.Indicator("BUS-15", t.B15, Color.DeepPink);
+      layout.Indicator($"BUS-{i}-00", t.B0,  Color.DeepPink);
+      layout.Indicator($"BUS-{i}-01", t.B1,  Color.DeepPink);
+      layout.Indicator($"BUS-{i}-02", t.B2,  Color.DeepPink);
+      layout.Indicator($"BUS-{i}-03", t.B3,  Color.DeepPink);
+      layout.Indicator($"BUS-{i}-04", t.B4,  Color.DeepPink);
+      layout.Indicator($"BUS-{i}-05", t.B5,  Color.DeepPink);
+      layout.Indicator($"BUS-{i}-06", t.B6,  Color.DeepPink);
+      layout.Indicator($"BUS-{i}-07", t.B7,  Color.DeepPink);
+      layout.Indicator($"BUS-{i}-08", t.B8,  Color.DeepPink);
+      layout.Indicator($"BUS-{i}-09", t.B9,  Color.DeepPink);
+      layout.Indicator($"BUS-{i}-10", t.B10, Color.DeepPink);
+      layout.Indicator($"BUS-{i}-11", t.B11, Color.DeepPink);
+      layout.Indicator($"BUS-{i}-12", t.B12, Color.DeepPink);
+      layout.Indicator($"BUS-{i}-13", t.B13, Color.DeepPink);
+      layout.Indicator($"BUS-{i}-14", t.B14, Color.DeepPink);
+      layout.Indicator($"BUS-{i}-15", t.B15, Color.DeepPink);
       layout.NextRow();
       layout.NextRow();
     }
   }
 
-  private static Word16 BuildMemorySwitches(LogicLayout layout)
+  private static Word16 BuildMemorySwitches(LogicLayout layout, string prefix)
   {
     var outputs = new ISignalSource[16];
     for (var x = 0; x < 16; x++)
-      outputs[x] = layout.Lever($"MEM-IN-{x}").Pinned();
+      outputs[x] = layout.Lever($"{prefix}-IN-{x}").Pinned();
     return Word16.FromArray(outputs);
   }
 
