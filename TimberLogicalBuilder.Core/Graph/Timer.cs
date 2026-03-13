@@ -8,19 +8,23 @@ public class Timer(string name, Vector3Int pos, TimerMode mode, TimerInterval in
   public TimerMode Mode { get; } = mode;
   public TimerInterval IntervalA { get; } = intervalA;
   public TimerInterval? IntervalB { get; } = intervalB;
-  
-  public ISignalSource? Input { get; private set; }
-  public ISignalSource? ResetInput { get; private set; }
 
   public Timer InputSignal(ISignalSource input)
   {
-    Input = input;
+    InputA = input;
     return this;
   }
 
   public Timer Reset(ISignalSource input)
   {
     ResetInput = input;
+    return this;
+  }
+
+  public Timer Inputs(ISignalSource? input, ISignalSource? reset)
+  {
+    InputA = input;
+    ResetInput = reset;
     return this;
   }
 }

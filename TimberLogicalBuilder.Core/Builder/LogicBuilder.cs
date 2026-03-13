@@ -9,9 +9,80 @@ namespace TimberLogicalBuilder.Core.Builder;
 public class LogicBuilder
 {
   private readonly LogicGraph _graph = new();
+  private readonly LogicBuilderSettings _settings;
+
+  private readonly Dictionary<String, LogicNode> _nodesByName = [];
   
   public LogicGraph Build() => _graph;
-  
+
+#region Constructors
+  public LogicBuilder(LogicBuilderSettings settings)
+  {
+    if (_settings.preserveExistingConnections)
+    {
+      throw new Exception("Cannot preserve existing connections if you don't give me any! Use the other constructor.");
+    }
+
+    _settings = settings;
+  }
+
+  public LogicBuilder(LogicBuilderSettings settings, Dictionary<String, LogicNode> nodesByName)
+  {
+    _nodesByName = nodesByName;
+    _settings = settings;
+  }
+#endregion
+
+#region Existing
+  public LogicNode reuse(LogicNode newbie)
+  {
+    if (!_settings.reuseExisting)
+    {
+      return newbie;
+    }
+
+    _nodesByName.TryGetValue(newbie.Name, out LogicNode? existing);
+
+    if (existing == null)
+    {
+      return newbie;
+    }
+
+    if (existing.GetType() != newbie.GetType()) 
+    {
+      // Probably a name collision, stick with what's new
+      return newbie;
+    }
+
+    ISignalSource? existingInputA = existing.InputA;
+    ISignalSource? newInputA = newbie.InputA;
+
+    if(!_settings.preserveExistingConnections || ( existingInputA == null && !_settings.preserveExistingNullConnections))
+    {
+      existing.InputA = newInputA;
+    }
+
+    ISignalSource? existingInputB = existing.InputB;
+    ISignalSource? newInputB = newbie.InputB;
+
+    if(!_settings.preserveExistingConnections || ( existingInputB == null && !_settings.preserveExistingNullConnections))
+    {
+      existing.InputB = newInputB;
+    }
+
+    ISignalSource? existingReset = existing.ResetInput;
+    ISignalSource? newReset = newbie.ResetInput;
+
+    if(!_settings.preserveExistingConnections || ( existingReset == null && !_settings.preserveExistingNullConnections))
+    {
+      existing.ResetInput = newReset;
+    }
+
+    return existing;
+  }
+
+#endregion
+
 #region General
   #region Empty
   public Empty Empty(string name, Vector3Int position)
@@ -24,7 +95,7 @@ public class LogicBuilder
   #region Levers
   public Lever Lever(string name, Vector3Int position)
   {
-    var lever = new Lever(name, position);
+    var lever = (Lever) reuse(new Lever(name, position));
     return _graph.Add(lever);
   }
   #endregion
@@ -42,12 +113,12 @@ public class LogicBuilder
     => AddDualRelay(RelayMode.Xor, name, position, inputA, inputB);
   private Relay AddSingleRelay(RelayMode mode, string name, Vector3Int position, ISignalSource inputA)
   {
-    var relay = new Relay(name, position, mode).Inputs(inputA);
+    var relay = (Relay) reuse(new Relay(name, position, mode).Inputs(inputA));
     return _graph.Add(relay);
   }
   private Relay AddDualRelay(RelayMode mode, string name, Vector3Int position, ISignalSource inputA, ISignalSource inputB)
   {
-    var relay = new Relay(name, position, mode).Inputs(inputA, inputB);
+    var relay = (Relay) reuse(new Relay(name, position, mode).Inputs(inputA, inputB));
     return _graph.Add(relay);
   }
   #endregion
@@ -63,14 +134,12 @@ public class LogicBuilder
     => AddDualMemory(MemoryMode.FlipFlop, name, position, inputA, inputB, reset);
   private Memory AddSingleMemory(MemoryMode mode, string name, Vector3Int position, ISignalSource input, ISignalSource? reset = null)
   {
-    var memory = new Memory(name, position, mode).Inputs(input);
-    if (reset is not null) memory.Reset(reset);
+    var memory = (Memory) reuse(new Memory(name, position, mode).Inputs(input, null, reset));
     return _graph.Add(memory);
   }
   private Memory AddDualMemory(MemoryMode mode, string name, Vector3Int position, ISignalSource inputA, ISignalSource inputB, ISignalSource? reset = null)
   {
-    var memory = new Memory(name, position, mode).Inputs(inputA, inputB);
-    if (reset is not null) memory.Reset(reset);
+    var memory = (Memory) reuse(new Memory(name, position, mode).Inputs(inputA, inputB, reset));
     return _graph.Add(memory);
   }
   #endregion
@@ -86,14 +155,12 @@ public class LogicBuilder
     => AddDualTimer(TimerMode.Oscillator, name, position, intervalA, intervalB, input, reset);
   private Timer AddSingleTimer(TimerMode mode, string name, Vector3Int position, TimerInterval intervalA, ISignalSource input, ISignalSource? reset = null)
   {
-    var delay = new Timer(name, position, mode, intervalA).InputSignal(input);
-    if  (reset is not null) delay.Reset(reset);
+    var delay = (Timer) reuse(new Timer(name, position, mode, intervalA).Inputs(input, reset));
     return _graph.Add(delay);
   }
   private Timer AddDualTimer(TimerMode mode, string name, Vector3Int position, TimerInterval intervalA, TimerInterval intervalB, ISignalSource input, ISignalSource? reset = null)
   {
-    var delay = new Timer(name, position, mode, intervalA, intervalB).InputSignal(input);
-    if  (reset is not null) delay.Reset(reset);
+    var delay = (Timer) reuse(new Timer(name, position, mode, intervalA, intervalB).Inputs(input, reset));
     return _graph.Add(delay);
   }
   #endregion
@@ -101,7 +168,7 @@ public class LogicBuilder
   #region Indicators
   public Indicator Indicator(string name, Vector3Int position, ISignalSource input, Color? color = null)
   {
-    var indicator = new Indicator(name, position).Connect(input);
+    var indicator = (Indicator) reuse(new Indicator(name, position).Connect(input));
     if (color is not null) indicator.Color(color.Value);
     _graph.Add(indicator);
     return indicator;
