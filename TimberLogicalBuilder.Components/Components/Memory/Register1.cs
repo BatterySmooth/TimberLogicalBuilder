@@ -26,7 +26,7 @@ public class Register1(
       for (var i = 0; i < channelSelects.Length; i++)
       {
         var channelSelect = l.And($"MEM-{cellIdentifier}-CHAN{i}-SEL")
-          .ConnectB(channelSelects[i])
+          .ConnectA(channelSelects[i])
           .Covered();
         
         if (channelBus?.Channels[i] != null)
@@ -49,7 +49,7 @@ public class Register1(
       
       foreach (var output in outputs)
       {
-        output.ConnectA(mem);
+        mem.ConnectA(output);
       }
     });
     

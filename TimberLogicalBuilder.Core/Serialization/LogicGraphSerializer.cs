@@ -14,7 +14,8 @@ public static class LogicGraphSerializer
     var array = new JsonArray();
     foreach (var node in graph.Nodes)
     {
-      array.Add(SerializeNode(node));
+      if (!node.IsEmpty)
+        array.Add(SerializeNode(node));
       if (node.IsCovered)
         array.Add(SerializePlatform(node));
     }
