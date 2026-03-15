@@ -159,33 +159,35 @@ public class ASCII215(
 
   public override ASCII215Out Build(ComponentContext context)
   {
-    var layout = context.RequireLayout();
     LogicNode[,] relays = new LogicNode[128,15];
     LogicNode[] lastForBit = new LogicNode[15];
 
-    // first we generate the matrix, symbol-wise
-    for(int bit = 0; bit < 15; bit++)
+    context.Builder.Layout(context.Position, context.Axes, l =>
     {
-      for(int sym = 32; sym < 128; sym++)
+      // first we generate the matrix, symbol-wise
+      for(int bit = 0; bit < 15; bit++)
       {
-        if ((bitmap[sym-32] & (0b100000000000000 >>> bit)) != 0)
+        for(int sym = 32; sym < 128; sym++)
         {
-          LogicNode last = lastForBit[bit];
+          if ((bitmap[sym-32] & (0b100000000000000 >>> bit)) != 0)
+          {
+            LogicNode last = lastForBit[bit];
 
-          LogicNode rel = layout.Or((identifier + "_" + sym + "_" + bit), input[sym], last?? input[sym]);
+            LogicNode rel = l.Or((identifier + "_" + sym + "_" + bit), input[sym], last?? input[sym]);
 
-          relays[sym, bit] = rel;
-          lastForBit[bit] = rel;
+            relays[sym, bit] = rel;
+            lastForBit[bit] = rel;
+          }
+          else
+          {
+            l.Step();
+          }
         }
-        else
-        {
-          layout.Step();
-        }
-      }
       
-      layout.NextRow();
-    }
-
-    return new ASCII215Out(Word15.FromArray(lastForBit));
+        l.NextRow();
+      }
+    });
+    
+    return new ASCII215Out(Word15.FromArray(lastForBit.Cast<ISignalSource>().ToArray()));
   }
 }

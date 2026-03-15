@@ -14,7 +14,8 @@ public static class LogicGraphSerializer
     var array = new JsonArray();
     foreach (var node in graph.Nodes)
     {
-      array.Add(SerializeNode(node));
+      if (!node.IsEmpty)
+        array.Add(SerializeNode(node));
       if (node.IsCovered)
         array.Add(SerializePlatform(node));
     }
@@ -28,7 +29,8 @@ public static class LogicGraphSerializer
     if (node.MemoryMode != null) return SerializeMemory(node);
     if (node.TimerMode != null) return SerializeTimer(node);
     if (node.CustomColor.HasValue) return SerializeIndicator(node);
-    return SerializeLever(node);
+    if (!node.IsEmpty) return SerializeLever(node);
+    throw new ArgumentOutOfRangeException(nameof(node), "Node type not supported");
   }
   
   private static JsonObject LoadTemplate(string template)
