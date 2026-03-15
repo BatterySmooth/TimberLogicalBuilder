@@ -14,7 +14,7 @@ public static class TimberSaveFile
   {
     using var archive = ZipFile.Open(sourceTimber, ZipArchiveMode.Update);
     var worldEntry = archive.GetEntry("world.json");
-    if (worldEntry == null)
+    if (worldEntry is null)
       throw new InvalidOperationException("world.json not found in timber file.");
     JsonObject root;
 
@@ -57,7 +57,7 @@ public static class TimberSaveFile
     File.Copy(sourceTimber, outputTimber, overwrite: true);
     using var archive = ZipFile.Open(outputTimber, ZipArchiveMode.Update);
     var worldEntry = archive.GetEntry("world.json");
-    if (worldEntry == null)
+    if (worldEntry is null)
       throw new InvalidOperationException("world.json not found in timber file.");
     JsonObject root;
 
@@ -89,7 +89,7 @@ public static class TimberSaveFile
   // Add all completely new entities
   private static JsonArray MergeEntities(JsonArray? existing, JsonArray incoming)
   {
-    if (existing == null)
+    if (existing is null)
     {
       return incoming;
     }
@@ -100,7 +100,7 @@ public static class TimberSaveFile
 
     foreach (var ent in incoming)
     {
-      if (ent == null)
+      if (ent is null)
       {
         continue;
       }
@@ -123,7 +123,7 @@ public static class TimberSaveFile
 
     foreach (var ent in existing)
     {
-      if (ent == null)
+      if (ent is null)
       {
         continue;
       }
@@ -131,7 +131,7 @@ public static class TimberSaveFile
       String? name = TimberEntity.GetName(ent);
       
       // if it's unnamed and doesn't collide with anything, add it.
-      if (name == null)
+      if (name is null)
       {
         if(!CheckForLocationCollision(entitiesByLocation, ent))
         {

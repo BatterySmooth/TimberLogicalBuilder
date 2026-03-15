@@ -19,7 +19,7 @@ public class EntityIngester
 
   public static bool isIngestible(JsonNode entity)
   {
-    if(entity == null)
+    if(entity is null)
     {
       return false;
     }

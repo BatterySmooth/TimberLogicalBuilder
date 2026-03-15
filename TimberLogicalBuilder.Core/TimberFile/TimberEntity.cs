@@ -35,7 +35,7 @@ public class TimberEntity
   {
     JsonNode? location = entity["Components"]?["BlockObject"]?["Coordinates"];
 
-    if (location == null)
+    if (location is null)
     {
       throw new NoNullAllowedException();
     }
@@ -97,7 +97,7 @@ public class TimberEntity
       intervalJson = timerData?["TimerIntervalB"];
     }
 
-    if(intervalJson == null)
+    if(intervalJson is null)
     {
       return null;
     }

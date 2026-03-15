@@ -41,7 +41,7 @@ public class LogicBuilder
 
     _nodesByName.TryGetValue(newbie.Name, out LogicNode? existing);
 
-    if (existing == null)
+    if (existing is null)
     {
       return newbie;
     }
@@ -55,7 +55,7 @@ public class LogicBuilder
     ISignalSource? existingInputA = existing.InputA;
     ISignalSource? newInputA = newbie.InputA;
 
-    if(!_settings.preserveExistingConnections || ( existingInputA == null && !_settings.preserveExistingNullConnections))
+    if(!_settings.preserveExistingConnections || ( existingInputA is null && !_settings.preserveExistingNullConnections))
     {
       existing.InputA = newInputA;
     }
@@ -63,7 +63,7 @@ public class LogicBuilder
     ISignalSource? existingInputB = existing.InputB;
     ISignalSource? newInputB = newbie.InputB;
 
-    if(!_settings.preserveExistingConnections || ( existingInputB == null && !_settings.preserveExistingNullConnections))
+    if(!_settings.preserveExistingConnections || ( existingInputB is null && !_settings.preserveExistingNullConnections))
     {
       existing.InputB = newInputB;
     }
@@ -71,7 +71,7 @@ public class LogicBuilder
     ISignalSource? existingReset = existing.ResetInput;
     ISignalSource? newReset = newbie.ResetInput;
 
-    if(!_settings.preserveExistingConnections || ( existingReset == null && !_settings.preserveExistingNullConnections))
+    if(!_settings.preserveExistingConnections || ( existingReset is null && !_settings.preserveExistingNullConnections))
     {
       existing.ResetInput = newReset;
     }

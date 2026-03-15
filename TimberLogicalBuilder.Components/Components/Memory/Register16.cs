@@ -42,7 +42,7 @@ public class Register16(
 
   private static Register1Output? ExtractBitPlane(Register16Output? source, int bit, int channelCount)
   {
-    if (source == null) return null;
+    if (source is null) return null;
     var result = new ISignalSource[channelCount];
     for (var i = 0; i < channelCount; i++)
       result[i] = source.Channels[i][bit];
