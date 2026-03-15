@@ -37,11 +37,11 @@ public static class TimberSaveFile
 
       foreach(JsonNode? entity in existingArray)
       {
-        if(entity != null && EntityIngester.isIngestible(entity))
+        if(entity is not null && EntityIngester.isIngestible(entity))
         {
           LogicNode? node = ingest.Ingest(entity);
 
-          if(node != null)
+          if(node is not null)
           {
             nodesByName[node.Name] = node;
           }
@@ -106,14 +106,14 @@ public static class TimberSaveFile
       }
 
       // record its location
-      if(TimberEntity.hasLoc(ent))
+      if(TimberEntity.HasLoc(ent))
       {
-        entitiesByLocation[TimberEntity.getLoc(ent)] = ent;
+        entitiesByLocation[TimberEntity.GetLoc(ent)] = ent;
       }
 
       // and its name
-      String? name = TimberEntity.getName(ent);
-      if (name != null) {
+      String? name = TimberEntity.GetName(ent);
+      if (name is not null) {
         entitiesByName[name] = ent;
       }
 
@@ -128,7 +128,7 @@ public static class TimberSaveFile
         continue;
       }
 
-      String? name = TimberEntity.getName(ent);
+      String? name = TimberEntity.GetName(ent);
       
       // if it's unnamed and doesn't collide with anything, add it.
       if (name == null)
@@ -159,12 +159,12 @@ public static class TimberSaveFile
     private static bool CheckForLocationCollision(Dictionary<Vector3Int, JsonNode> map, JsonNode entity)
   {
     // Can't collide with something that doesn't have a location
-    if(!TimberEntity.hasLoc(entity))
+    if(!TimberEntity.HasLoc(entity))
     {
       return false;
     }
 
-    Vector3Int loc = TimberEntity.getLoc(entity);
+    Vector3Int loc = TimberEntity.GetLoc(entity);
 
     return map.ContainsKey(loc);
   }

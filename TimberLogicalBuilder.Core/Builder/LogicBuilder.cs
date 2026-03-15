@@ -115,8 +115,8 @@ public class LogicBuilder
   {
     var relay = Reuse(new LogicNode(name, position)
       .SetRelayMode(mode));
-    if (inputA != null) relay.ConnectA(inputA);
-    if (inputB != null) relay.ConnectB(inputB);
+    if (inputA is not null) relay.ConnectA(inputA);
+    if (inputB is not null) relay.ConnectB(inputB);
     return _graph.Add(relay);
   }
   #endregion
@@ -134,9 +134,9 @@ public class LogicBuilder
   {
     var memory = Reuse(new LogicNode(name, position)
       .SetMemoryMode(mode));
-    if (inputA != null) memory.ConnectA(inputA);
-    if (inputB != null) memory.ConnectB(inputB);
-    if (reset != null) memory.ConnectReset(reset);
+    if (inputA is not null) memory.ConnectA(inputA);
+    if (inputB is not null) memory.ConnectB(inputB);
+    if (reset is not null) memory.ConnectReset(reset);
     return _graph.Add(memory);
   }
   #endregion
@@ -156,8 +156,8 @@ public class LogicBuilder
       .SetTimerMode(mode)
       .SetTimerIntervalA(intervalA));
     if (intervalB.HasValue) delay.SetTimerIntervalB(intervalB.Value);
-    if (input != null) delay.ConnectA(input);
-    if (reset != null) delay.ConnectReset(reset);
+    if (input is not null) delay.ConnectA(input);
+    if (reset is not null) delay.ConnectReset(reset);
     return _graph.Add(delay);
   }
   #endregion

@@ -9,29 +9,29 @@ namespace TimberLogicalBuilder.Core.TimberFile;
 public class TimberEntity
 {
   
-  public static string getType(JsonNode entity)
+  public static string GetType(JsonNode entity)
   {
     return entity["Template"]?.AsValue().ToString() ?? "[Typeless]";
   }
 
-  public static string? getName(JsonNode entity)
+  public static string? GetName(JsonNode entity)
   {
     return entity["Components"]?["NamedEntity"]?["EntityName"]?.ToString();
   }
 
-  public static string? getTemplate(JsonNode entity)
+  public static string? GetTemplate(JsonNode entity)
   {
     return entity["Template"]?.ToString();
   }
 
 // For example: Beavers don't have a BlockObject, they have a Character.
-  public static bool hasLoc(JsonNode entity)
+  public static bool HasLoc(JsonNode entity)
   {
     JsonNode? location = entity["Components"]?["BlockObject"]?["Coordinates"];
 
-    return (location != null);
+    return (location is not null);
   }
-  public static Vector3Int getLoc(JsonNode entity)
+  public static Vector3Int GetLoc(JsonNode entity)
   {
     JsonNode? location = entity["Components"]?["BlockObject"]?["Coordinates"];
 
@@ -52,7 +52,7 @@ public class TimberEntity
     return new Vector3Int(x, y, z);
   }
 
-  public static Guid getId(JsonNode entity)
+  public static Guid GetId(JsonNode entity)
   {
     // An entity without an ID? Unheard of!
     string id = entity["Id"]?.AsValue().ToString() ?? "[unidentified]";
@@ -65,25 +65,25 @@ public class TimberEntity
     return Guid.NewGuid();
   }
 
-  public static RelayMode getRelayMode(JsonNode relay)
+  public static RelayMode GetRelayMode(JsonNode relay)
   {
     RelayMode.TryParse(relay["Components"]?["Relay"]?["Mode"]?.AsValue().ToString(), out RelayMode mode);
     return mode;
   }
 
-  public static MemoryMode getMemoryMode(JsonNode memory)
+  public static MemoryMode GetMemoryMode(JsonNode memory)
   {
     MemoryMode.TryParse(memory["Components"]?["Memory"]?["Mode"]?.AsValue().ToString(), out MemoryMode mode);
     return mode;
   }
 
-  public static TimerMode getTimerMode(JsonNode timer)
+  public static TimerMode GetTimerMode(JsonNode timer)
   {
     TimerMode.TryParse(timer["Components"]?["Timer"]?["Mode"]?.AsValue().ToString(), out TimerMode mode);
     return mode;
   }
 
-  public static TimerInterval? getTimerInterval(JsonNode timer, bool first)
+  public static TimerInterval? GetTimerInterval(JsonNode timer, bool first)
   {
     JsonNode? timerData = timer["Components"]?["Timer"];
     JsonNode? intervalJson;

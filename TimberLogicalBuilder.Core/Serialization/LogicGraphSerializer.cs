@@ -25,9 +25,9 @@ public static class LogicGraphSerializer
   
   private static JsonObject SerializeNode(LogicNode node)
   {
-    if (node.RelayMode != null) return SerializeRelay(node);
-    if (node.MemoryMode != null) return SerializeMemory(node);
-    if (node.TimerMode != null) return SerializeTimer(node);
+    if (node.RelayMode is not null) return SerializeRelay(node);
+    if (node.MemoryMode is not null) return SerializeMemory(node);
+    if (node.TimerMode is not null) return SerializeTimer(node);
     if (node.CustomColor.HasValue) return SerializeIndicator(node);
     if (!node.IsEmpty) return SerializeLever(node);
     throw new ArgumentOutOfRangeException(nameof(node), "Node type not supported");
@@ -92,7 +92,7 @@ public static class LogicGraphSerializer
     var relayNode = json["Components"]!["Relay"]!;
     relayNode["Mode"] = relay.RelayMode.ToString();
     relayNode["InputA"] = relay.InputA.Id.ToString();
-    if (relay.InputB != null)
+    if (relay.InputB is not null)
       relayNode["InputB"] = relay.InputB.Id.ToString();
     return json;
   }
@@ -106,9 +106,9 @@ public static class LogicGraphSerializer
     var mem = json["Components"]!["Memory"]!;
     mem["Mode"] = memory.MemoryMode.ToString();
     mem["InputA"] = memory.InputA.Id.ToString();
-    if (memory.InputB != null)
+    if (memory.InputB is not null)
       mem["InputB"] = memory.InputB.Id.ToString();
-    if (memory.ResetInput != null)
+    if (memory.ResetInput is not null)
       mem["ResetInput"] = memory.ResetInput.Id.ToString();
     return json;
   }
@@ -123,9 +123,9 @@ public static class LogicGraphSerializer
     t["Mode"] = timer.TimerMode.ToString();
     t["Input"] = timer.InputA.Id.ToString();
     t["TimerIntervalA"] = SerializeInterval(timer.IntervalA!.Value);
-    if (timer.IntervalB != null)
+    if (timer.IntervalB is not null)
       t["TimerIntervalB"] = SerializeInterval(timer.IntervalB.Value);
-    if (timer.ResetInput != null)
+    if (timer.ResetInput is not null)
       t["ResetInput"] = timer.ResetInput.Id.ToString();
     return json;
   }

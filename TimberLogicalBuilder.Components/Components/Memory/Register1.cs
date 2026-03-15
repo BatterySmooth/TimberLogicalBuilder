@@ -1,7 +1,6 @@
 using TimberLogicalBuilder.Components.ComponentSystem;
 using TimberLogicalBuilder.Core.Builder;
 using TimberLogicalBuilder.Core.Graph;
-using TimberLogicalBuilder.Core.Structs;
 
 namespace TimberLogicalBuilder.Components.Components.Memory;
 
@@ -13,7 +12,6 @@ public class Register1(
   ISignalSource[] channelSelects,
   ISignalSource input,
   Register1Output? channelBus = null,
-  Vector3Int? anchor = null,
   ISignalSource? reset = null)
   : BaseComponent<Register1Output>
 {
@@ -30,7 +28,7 @@ public class Register1(
           .ConnectA(channelSelects[i])
           .Covered();
         
-        if (channelBus?.Channels[i] != null)
+        if (channelBus?.Channels[i] is not null)
         {
           outputs[i] = l.Or(
               $"MEM-{cellIdentifier}-CHAN{i}-OUT")
@@ -49,6 +47,7 @@ public class Register1(
       var mem = l.FlipFlop($"MEM-{cellIdentifier}")
         .ConnectA(input)
         .ConnectB(writeEnable);
+      if (reset is not null) mem.ConnectReset(reset);
       
       foreach (var select in selects)
       {

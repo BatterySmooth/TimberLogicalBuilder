@@ -24,20 +24,20 @@ public class EntityIngester
       return false;
     }
 
-    string entityType = TimberEntity.getType(entity);
+    string entityType = TimberEntity.GetType(entity);
     Match match = Regex.Match(entityType, logicNodeRegex);
     return match.Success;
   }
 
   public LogicNode? Ingest(JsonNode entity)
   {
-    string entityType = TimberEntity.getType(entity);
+    string entityType = TimberEntity.GetType(entity);
     Match match = Regex.Match(entityType, logicNodeRegex);
     string factionlessType = match.Groups[1].Value;
 
-    string name = TimberEntity.getName(entity) ?? "";
-    Vector3Int loc = TimberEntity.getLoc(entity);
-    Guid id = TimberEntity.getId(entity);
+    string name = TimberEntity.GetName(entity) ?? "";
+    Vector3Int loc = TimberEntity.GetLoc(entity);
+    Guid id = TimberEntity.GetId(entity);
 
     LogicNode? ent = null;
     string? inputAId = null;
@@ -47,14 +47,14 @@ public class EntityIngester
     switch(factionlessType)
     {
       case "Relay":
-        ent = new LogicNode(name, loc).SetRelayMode(TimberEntity.getRelayMode(entity));
+        ent = new LogicNode(name, loc).SetRelayMode(TimberEntity.GetRelayMode(entity));
         ent.Id = id;
         sourcesById[id] = (ISignalSource) ent;
         inputAId = entity["Components"]?["Relay"]?["InputA"]?.AsValue().ToString();
         inputBId = entity["Components"]?["Relay"]?["InputB"]?.AsValue().ToString();
         break;
       case "Memory":
-        ent = new LogicNode(name, loc).SetMemoryMode(TimberEntity.getMemoryMode(entity));
+        ent = new LogicNode(name, loc).SetMemoryMode(TimberEntity.GetMemoryMode(entity));
         ent.Id = id;
         sourcesById[id] = (ISignalSource) ent;
         inputAId = entity["Components"]?["Memory"]?["InputA"]?.AsValue().ToString();
@@ -74,19 +74,19 @@ public class EntityIngester
         inputAId = entity["Components"]?["Automatable"]?["Input"]?.AsValue().ToString();
         break;
       case "Timer":
-        ent = new LogicNode(name, loc).SetTimerMode(TimberEntity.getTimerMode(entity))
-          .SetTimerIntervalA(TimberEntity.getTimerInterval(entity, true) ?? new TimerInterval(1, TimerUnit.Hours));
-        if (TimberEntity.getTimerInterval(entity, false).HasValue)
-          ent.SetTimerIntervalB(TimberEntity.getTimerInterval(entity, false)!.Value);
+        ent = new LogicNode(name, loc).SetTimerMode(TimberEntity.GetTimerMode(entity))
+          .SetTimerIntervalA(TimberEntity.GetTimerInterval(entity, true) ?? new TimerInterval(1, TimerUnit.Hours));
+        if (TimberEntity.GetTimerInterval(entity, false).HasValue)
+          ent.SetTimerIntervalB(TimberEntity.GetTimerInterval(entity, false)!.Value);
         ent.Id = id;
         sourcesById[id] = (ISignalSource) ent;
         break;
     }
 
     // After all that, if we actually found the entity, time for wiring inputs and outputs
-    if (ent != null)
+    if (ent is not null)
     {
-      if (inputAId != null)
+      if (inputAId is not null)
       {
         Guid.TryParse(inputAId, out Guid inputAGuid);
 
@@ -106,7 +106,7 @@ public class EntityIngester
         }
       }
 
-      if (inputBId != null)
+      if (inputBId is not null)
       {
         Guid.TryParse(inputBId, out Guid inputBGuid);
 
@@ -126,7 +126,7 @@ public class EntityIngester
         }
       }
 
-      if (resetInputId != null)
+      if (resetInputId is not null)
       {
         Guid.TryParse(resetInputId, out Guid resetGuid);
 
