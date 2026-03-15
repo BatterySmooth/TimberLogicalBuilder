@@ -29,6 +29,17 @@ class Program
     var builder = new LogicBuilder(new LogicBuilderSettings().PreserveExistingConnections(), nodesByName);
     
     // var clock = BuildClock(builder, (5, 5, BaseZ));
+    
+    // builder.Layout((20, 20, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
+    // {
+    //   var writeEnable = l.Lever("Write Enable").Pinned();
+    //   var channelSelect1 = l.Lever("Channel Select").Pinned();
+    //   var channelSelect2 = l.Lever("Channel Select").Pinned();
+    //   var input = l.Lever("Mem Input").Pinned();
+    //   
+    //   l.Component(new Register1("MEM-0", writeEnable, [channelSelect1, channelSelect2], input));
+    // });
+    
     builder.Layout((20, 20, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
     {
       l.Step();
@@ -67,6 +78,7 @@ class Program
       {
         var memEnable = l.Lever($"MemEnable{m}").Sprung().Pinned();
         var output = l.Component(new Register16($"{m:D2}", memEnable, memSelects[m], previous, inputs));
+        l.NextRow();
         previous = output;
       }
     

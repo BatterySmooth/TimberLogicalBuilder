@@ -11,8 +11,8 @@ public class Register1(
   string cellIdentifier,
   ISignalSource writeEnable,
   ISignalSource[] channelSelects,
-  Register1Output? channelBus,
   ISignalSource input,
+  Register1Output? channelBus = null,
   Vector3Int? anchor = null,
   ISignalSource? reset = null)
   : BaseComponent<Register1Output>
@@ -20,12 +20,13 @@ public class Register1(
   public override Register1Output Build(ComponentContext context)
   {
     var outputs = new LogicNode[channelSelects.Length];
+    var selects = new LogicNode[channelSelects.Length];
     
     context.Builder.Layout(context.Position, LayoutAxis.Z, LayoutAxis.X, 1, l =>
     {
       for (var i = 0; i < channelSelects.Length; i++)
       {
-        var channelSelect = l.And($"MEM-{cellIdentifier}-CHAN{i}-SEL")
+        selects[i] = l.And($"MEM-{cellIdentifier}-CHAN{i}-SEL")
           .ConnectA(channelSelects[i])
           .Covered();
         
@@ -33,7 +34,7 @@ public class Register1(
         {
           outputs[i] = l.Or(
               $"MEM-{cellIdentifier}-CHAN{i}-OUT")
-            .ConnectA(channelSelect)
+            .ConnectA(selects[i])
             .ConnectB(channelBus.Channels[i])
             .Covered();
         }
@@ -41,15 +42,17 @@ public class Register1(
         {
           l.Empty($"MEM-{cellIdentifier}-CHAN{i}");
           // When it's the first cell, pass the AND gate as the bus output
-          outputs[i] = channelSelect;
+          outputs[i] = selects[i];
         }
       }
 
-      var mem = l.FlipFlop($"MEM-{cellIdentifier}");
+      var mem = l.FlipFlop($"MEM-{cellIdentifier}")
+        .ConnectA(input)
+        .ConnectB(writeEnable);
       
-      foreach (var output in outputs)
+      foreach (var select in selects)
       {
-        mem.ConnectA(output);
+        select.ConnectB(mem);
       }
     });
     

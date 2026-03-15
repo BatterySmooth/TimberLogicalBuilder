@@ -205,7 +205,7 @@ public class LogicBuilder
     {
       LayoutAxis.X => new Vector3Int(spacing, 0, 0),
       LayoutAxis.Y => new Vector3Int(0, spacing, 0),
-      LayoutAxis.Z => new Vector3Int(0, 0, spacing),
+      LayoutAxis.Z => new Vector3Int(0, 0, Math.Max(spacing, 2)),
       _ => throw new ArgumentOutOfRangeException()
     };
   }

@@ -1,4 +1,5 @@
 using System.Drawing;
+using TimberLogicalBuilder.Core.Exceptions;
 using TimberLogicalBuilder.Core.Structs;
 
 namespace TimberLogicalBuilder.Core.Graph;
@@ -75,16 +76,22 @@ public class LogicNode(string name, Vector3Int position) : ISignalSource
   public ISignalSource? ResetInput {get; set;}
   public LogicNode ConnectA(ISignalSource inputA)
   {
+    if (InputA is not null)
+      throw new InvalidLogicNodeConnectionException("Cannot overwrite an existing connection (A)");
     InputA = inputA;
     return this;
   }
   public LogicNode ConnectB(ISignalSource inputB)
   {
+    if (InputB is not null)
+      throw new InvalidLogicNodeConnectionException("Cannot overwrite an existing connection (B)");
     InputB = inputB;
     return this;
   }
   public LogicNode ConnectReset(ISignalSource resetInput)
   {
+    if (ResetInput is not null)
+      throw new InvalidLogicNodeConnectionException("Cannot overwrite an existing connection (Reset)");
     ResetInput = resetInput;
     return this;
   }

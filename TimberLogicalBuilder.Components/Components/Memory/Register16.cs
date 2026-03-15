@@ -18,26 +18,24 @@ public class Register16(
 {
   public override Register16Output Build(ComponentContext context)
   {
-    
     var channelCount = channelSelects.Length;
     var outputs = new ISignalSource[16][];
     
-    context.Builder.Layout(context.Position, context.Axes, l =>
+    for (var bit = 0; bit < 16; bit++)
     {
-      for (var bit = 0; bit < 16; bit++)
-      {
-        outputs[bit] = l.Component(
-            new Register1(
-              $"{registerIdentifier}-{bit:X}",
-              writeEnable,
-              channelSelects,
-              ExtractBitPlane(channelBus, bit, channelCount),
-              input[bit],
-              reset: reset))
-          .Channels;
-      }
-      l.NextRow();
-    });
+      outputs[bit] = context.Layout.Component(
+          new Register1(
+            $"{registerIdentifier}-{bit:X}",
+            writeEnable,
+            channelSelects,
+            input[bit],
+            ExtractBitPlane(channelBus, bit, channelCount),
+            reset: reset))
+        .Channels;
+      context.Layout.Step();
+    }
+
+    context.Layout.NextRow();
     
     return new Register16Output(Word16.PackBitPlanes(outputs));
   }
