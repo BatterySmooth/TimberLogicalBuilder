@@ -52,6 +52,21 @@ public readonly struct Word16(
       bits[8], bits[9], bits[10], bits[11], bits[12], bits[13], bits[14], bits[15]);
   }
   
+  public static Word16 FromWord8(Word8 low, Word8 high)
+  {
+    return new Word16(
+      low.B0, low.B1, low.B2, low.B3, low.B4, low.B5, low.B6, low.B7,
+      high.B0, high.B1, high.B2, high.B3, high.B4, high.B5, high.B6, high.B7
+    );
+  }
+  
+  public static (Word8 low, Word8 high) ToWord8(Word16 word16)
+  {
+    var low = new Word8(word16.B0, word16.B1, word16.B2, word16.B3, word16.B4, word16.B5, word16.B6, word16.B7);
+    var high = new Word8(word16.B8, word16.B9, word16.B10, word16.B11, word16.B12, word16.B13, word16.B14, word16.B15);
+    return (low, high);
+  }
+  
   public static ISignalSource[] FlattenBitPlanes(Word16[] words)
   {
     var wordCount = words.Length;

@@ -23,4 +23,16 @@ public readonly struct Word8(
     if(bits.Length != 8) throw new ArgumentException();
     return new Word8(bits[0], bits[1], bits[2], bits[3], bits[4], bits[5], bits[6], bits[7]);
   }
+  
+  public static Word8 FromWord4(Word4 low, Word4 high)
+  {
+    return new Word8(low.B0, low.B1, low.B2, low.B3, high.B0, high.B1, high.B2, high.B3);
+  }
+  
+  public static (Word4 low, Word4 high) ToWord4(Word8 word8)
+  {
+    var low = new Word4(word8.B0, word8.B1, word8.B2, word8.B3);
+    var high = new Word4(word8.B4, word8.B5, word8.B6, word8.B7);
+    return (low, high);
+  }
 }

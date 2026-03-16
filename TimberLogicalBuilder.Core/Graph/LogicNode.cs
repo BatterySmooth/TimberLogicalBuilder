@@ -81,6 +81,11 @@ public class LogicNode(string name, Vector3Int position) : ISignalSource
     InputA = inputA;
     return this;
   }
+  public LogicNode DisconnectA()
+  {
+    InputA = null;
+    return this;
+  }
   public LogicNode ConnectB(ISignalSource inputB)
   {
     if (InputB is not null)
@@ -88,11 +93,21 @@ public class LogicNode(string name, Vector3Int position) : ISignalSource
     InputB = inputB;
     return this;
   }
+  public LogicNode DisconnectB()
+  {
+    InputB = null;
+    return this;
+  }
   public LogicNode ConnectReset(ISignalSource resetInput)
   {
     if (ResetInput is not null)
       throw new InvalidLogicNodeConnectionException("Cannot overwrite an existing connection (Reset)");
     ResetInput = resetInput;
+    return this;
+  }
+  public LogicNode DisconnectReset()
+  {
+    ResetInput = null;
     return this;
   }
   

@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using TimberLogicalBuilder.Components.Components.Display;
 using TimberLogicalBuilder.Components.Components.Memory;
+using TimberLogicalBuilder.Components.DynamicComponents;
 using TimberLogicalBuilder.Components.Extensions;
 using TimberLogicalBuilder.Components.Structs;
 using TimberLogicalBuilder.Core.Builder;
@@ -29,6 +30,29 @@ class Program
     var builder = new LogicBuilder(new LogicBuilderSettings().PreserveExistingConnections(), nodesByName);
     
     // var clock = BuildClock(builder, (5, 5, BaseZ));
+
+    builder.Layout((20, 20, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
+    {
+      var or = new MultiOr4("BUS", (1, 3, 8));
+      var orComponent = l.Component(or);
+      l.Step();
+      l.Step();
+      l.Step();
+      l.Step();
+      l.Step();
+      l.Step();
+      l.Step();
+      l.Step();
+
+      for (var i = 0; i < 8; i++)
+      {
+        var in0 = l.Lever($"IN-0{i}").Pinned();
+        var in1 = l.Lever($"IN-1{i}").Pinned();
+        var in2 = l.Lever($"IN-2{i}").Pinned();
+        var in3 = l.Lever($"IN-3{i}").Pinned();
+        or.ConnectInput(new Word4(in0, in1, in2, in3));
+      }
+    });
     
     // builder.Layout((20, 20, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
     // {
@@ -40,52 +64,52 @@ class Program
     //   l.Component(new Register1("MEM-0", writeEnable, [channelSelect1, channelSelect2], input));
     // });
     
-    builder.Layout((20, 20, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
-    {
-      l.Step();
-      var inputs = BuildMemorySwitches(l, "MEM");
-      l.NextRow();
-      l.NextRow();
-      
-      var memCount = 6;
-      var channelCount = 2;
-      int maxWidth = 16;
-      var memSelects = new ISignalSource[memCount][];
-      int placedInRow = 0;
-      l.Step();
-      for (var m = 0; m < memCount; m++)
-      {
-        memSelects[m] = new ISignalSource[channelCount];
-        for (var c = 0; c < channelCount; c++)
-        {
-          if (placedInRow >= maxWidth)
-          {
-            l.NextRow();
-            l.Step();
-            placedInRow = 0;
-          }
-          memSelects[m][c] = l.Lever($"MEM {m} CHAN SEL {c}").Pinned();
-          placedInRow++;
-        }
-      }
-    
-      l.NextRow();
-      l.NextRow();
-    
-      Register16Output? previous = null;
-    
-      for (var m = 0; m < memCount; m++)
-      {
-        var memEnable = l.Lever($"MemEnable{m}").Sprung().Pinned();
-        var output = l.Component(new Register16($"{m:D2}", memEnable, memSelects[m], previous, inputs));
-        l.NextRow();
-        previous = output;
-      }
-    
-      l.NextRow();
-      
-      BuildLamps(l, previous);
-    });
+    // builder.Layout((20, 20, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
+    // {
+    //   l.Step();
+    //   var inputs = BuildMemorySwitches(l, "MEM");
+    //   l.NextRow();
+    //   l.NextRow();
+    //   
+    //   var memCount = 6;
+    //   var channelCount = 2;
+    //   int maxWidth = 16;
+    //   var memSelects = new ISignalSource[memCount][];
+    //   int placedInRow = 0;
+    //   l.Step();
+    //   for (var m = 0; m < memCount; m++)
+    //   {
+    //     memSelects[m] = new ISignalSource[channelCount];
+    //     for (var c = 0; c < channelCount; c++)
+    //     {
+    //       if (placedInRow >= maxWidth)
+    //       {
+    //         l.NextRow();
+    //         l.Step();
+    //         placedInRow = 0;
+    //       }
+    //       memSelects[m][c] = l.Lever($"MEM {m} CHAN SEL {c}").Pinned();
+    //       placedInRow++;
+    //     }
+    //   }
+    //
+    //   l.NextRow();
+    //   l.NextRow();
+    //
+    //   Register16Output? previous = null;
+    //
+    //   for (var m = 0; m < memCount; m++)
+    //   {
+    //     var memEnable = l.Lever($"MemEnable{m}").Sprung().Pinned();
+    //     var output = l.Component(new Register16($"{m:D2}", memEnable, memSelects[m], previous, inputs));
+    //     l.NextRow();
+    //     previous = output;
+    //   }
+    //
+    //   l.NextRow();
+    //   
+    //   BuildLamps(l, previous);
+    // });
     
 
     // builder.Layout((20, 40, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
