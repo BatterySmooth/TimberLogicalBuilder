@@ -13,7 +13,7 @@ namespace TimberLogicalBuilder.Demo;
 
 class Program
 {
-  private const int BaseZ = 2;
+  private const int BaseZ = 4;
   
   static void Main(string[] args)
   {
@@ -101,6 +101,24 @@ class Program
     //   l.NextRow();
     //   l.Component(new Display15("disp", fifteen, dispPwr));
     // });
+
+
+      builder.Layout((20, 70, BaseZ), LayoutAxis.X, LayoutAxis.Y, 2, l =>
+      {
+        var httpIn = l.HttpLever("http_in");
+
+        l.Step();
+
+        l.Not("http_not", httpIn);
+
+        l.NextRow();
+
+        var toggle = l.Lever("http_toggle");
+
+        l.Step();
+
+        l.HttpAdapter("http_out", toggle, "http://localhost:8081/on/http_out", "http://localhost:8081/off/http_out");
+      });
 
 
     Console.WriteLine("Building entity graph...");

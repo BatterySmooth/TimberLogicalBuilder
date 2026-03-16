@@ -177,6 +177,85 @@ public static class Templates
                                             }
                                           }
                                           """;
+
+  public const string HttpLeverTemplate = """
+                                          {
+                                            "Id": "{{ID}}",
+                                            "Template": "HttpLever.{{FACTION}}",
+                                            "Components": {
+                                              "NamedEntity": {
+                                                "EntityName": "{{NAME}}"
+                                              },
+                                              "BlockObject": {
+                                                "Coordinates": {
+                                                  "X":"{{X}}",
+                                                  "Y": "{{Y}}",
+                                                  "Z": "{{Z}}"
+                                                },
+                                                "Orientation": "Cw90"
+                                              },
+                                              "Lever": {
+                                              },
+                                              "Automator": {
+                                                "State": "Off"
+                                              },
+                                              "Inventory:ConstructionSite": {
+                                                "Storage": {
+                                                  "Goods": [
+                                                    { "Good": "Gear", "Amount": 2 },
+                                                    { "Good": "ScrapMetal", "Amount": 2 }
+                                                  ]
+                                                }
+                                              },
+                                              "CustomizableIlluminator": {
+                                                "IsCustomized": true,
+                                                "CustomColor": {
+                                                  "r": 1.0,
+                                                  "g": 0.0,
+                                                  "b": 0.0,
+                                                  "a": 1.0
+                                                }
+                                              }
+                                            }
+                                          }
+                                        """;
+
+  public const string HttpAdapterTemplate = """
+                                            {
+                                              "Id": "{{ID}}",
+                                              "Template": "HttpAdapter.{{FACTION}}",
+                                              "Components": {
+                                                "NamedEntity": {
+                                                  "EntityName": "HTTP_out_0"
+                                                },
+                                                "BlockObject": {
+                                                  "Coordinates": {
+                                                    "X":"{{X}}",
+                                                    "Y": "{{Y}}",
+                                                    "Z": "{{Z}}"
+                                                  },
+                                                  "Orientation": "Cw90"
+                                                },
+                                                "HttpAdapter": {
+                                                  "SwitchedOnWebbookUrlKey": "{{WHEN_ON_HTTP}}",
+                                                  "SwitchedOffWebbookUrlKey": "{{WHEN_OFF_HTTP}}",
+                                                  "MethodKey": "{{HTTP_MODE}}"
+                                                },
+                                                "Automatable": {
+                                                  "Input": "{{INPUT}}"
+                                                },
+                                                "Inventory:ConstructionSite": {
+                                                  "Storage": {
+                                                    "Goods": [
+                                                      { "Good": "Gear", "Amount": 2 },
+                                                      { "Good": "ScrapMetal", "Amount": 4 }
+                                                    ]
+                                                  }
+                                                }
+                                              }
+                                            }
+                                            """;
+
   public const string PlatformTemplate = """
                                          {
                                            "Id": "{{ID}}",
