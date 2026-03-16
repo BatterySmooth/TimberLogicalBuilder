@@ -22,7 +22,7 @@ public class MultiOr2(
     {
       _ors[i] = new MultiOr1($"{identifier}{i}", MaxSize);
       outputs[i] = context.Layout.Component(_ors[i]);
-      context.Layout.Step();
+      // context.Layout.Step();
     }
     
     return new MultiOr2Out(new Word2(outputs[0].Output, outputs[1].Output));

@@ -32,10 +32,8 @@ public class Register16(
             ExtractBitPlane(channelBus, bit, channelCount),
             reset: reset))
         .Channels;
-      context.Layout.Step();
+      // context.Layout.Step();
     }
-
-    context.Layout.NextRow();
     
     return new Register16Output(Word16.PackBitPlanes(outputs));
   }

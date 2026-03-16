@@ -22,8 +22,8 @@ public class MultiOr4(
     {
       _ors[i] = new MultiOr2($"{identifier}{i}", MaxSize);
       outputs[i] = context.Layout.Component(_ors[i]);
-      context.Layout.Step();
-      context.Layout.Step();
+      // context.Layout.Step();
+      // context.Layout.Step();
     }
     
     return new MultiOr4Out(Word4.FromWord2(outputs[0].Output, outputs[1].Output));

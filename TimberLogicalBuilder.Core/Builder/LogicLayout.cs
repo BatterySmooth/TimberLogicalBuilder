@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Numerics;
 using TimberLogicalBuilder.Core.Graph;
 using TimberLogicalBuilder.Core.Structs;
 
@@ -13,29 +14,31 @@ public sealed class LogicLayout
     private readonly Vector3Int _anchor;
     private Vector3Int _cursor;
     public readonly LayoutAxes Axes;
-    private readonly bool _autoAdvance;
+    
+    public Vector3Int Bounds { get; private set; }
 
     internal LogicLayout(
       LogicBuilder builder,
       Vector3Int anchor,
-      LayoutAxes axes,
-      bool autoAdvance = true)
+      LayoutAxes axes)
     {
       _builder = builder;
       _anchor = anchor;
       _cursor = anchor;
       Axes = axes;
-      _autoAdvance = autoAdvance;
     }
 
     #region Scope
-    internal void AdvancePrimary()
+    internal int PrimarySpan(LayoutAxes axes)
     {
-      if (_autoAdvance)
-      {
-        _cursor += Axes.Primary;
-        _primaryIndex++;
-      }
+      var bounds = Bounds;
+      if (axes.Primary.X != 0)
+        return bounds.X / Math.Abs(axes.Primary.X);
+      if (axes.Primary.Y != 0)
+        return bounds.Y / Math.Abs(axes.Primary.Y);
+      if (axes.Primary.Z != 0)
+        return bounds.Z / Math.Abs(axes.Primary.Z);
+      return 0;
     }
     #endregion
   
@@ -90,6 +93,7 @@ public sealed class LogicLayout
     public LogicLayout Reset()
     {
       _cursor = _anchor;
+      Bounds = _cursor;
       _primaryIndex = 0;
       _secondaryIndex = 0;
       _tertiaryIndex = 0;
@@ -158,7 +162,8 @@ public sealed class LogicLayout
   private LogicNode Build(Func<LogicNode> factory)
   {
     var node = factory();
-    AdvancePrimary();
+    Bounds = Vector3Int.Max(Bounds, (node.Position - _anchor) + Vector3Int.DefaultGridSquare);
+    Step();
     return node;
   }
 #endregion

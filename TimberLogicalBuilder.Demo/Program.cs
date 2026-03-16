@@ -33,7 +33,8 @@ class Program
 
     builder.Layout((20, 20, BaseZ), LayoutAxis.X, LayoutAxis.Y, 1, l =>
     {
-      var or = new MultiOr4("BUS", (1, 3, 8));
+      // var or = new MultiOr4("BUS", (1, 3, 8));
+      var or = new MultiOr2("BUS", (1, 3, 8));
       var orComponent = l.Component(or);
       l.Step();
       l.Step();
@@ -43,14 +44,15 @@ class Program
       l.Step();
       l.Step();
       l.Step();
-
-      for (var i = 0; i < 8; i++)
+    
+      for (var i = 0; i < 4; i++)
       {
         var in0 = l.Lever($"IN-0{i}").Pinned();
         var in1 = l.Lever($"IN-1{i}").Pinned();
         var in2 = l.Lever($"IN-2{i}").Pinned();
         var in3 = l.Lever($"IN-3{i}").Pinned();
-        or.ConnectInput(new Word4(in0, in1, in2, in3));
+        // or.ConnectInput(new Word4(in0, in1, in2, in3));
+        or.ConnectInput(new Word2(in0, in1));
       }
     });
     
@@ -127,22 +129,22 @@ class Program
     // });
 
 
-      builder.Layout((20, 70, BaseZ), LayoutAxis.X, LayoutAxis.Y, 2, l =>
-      {
-        var httpIn = l.HttpLever("http_in");
-
-        l.Step();
-
-        l.Not("http_not", httpIn);
-
-        l.NextRow();
-
-        var toggle = l.Lever("http_toggle");
-
-        l.Step();
-
-        l.HttpAdapter("http_out", toggle, "http://localhost:8081/on/http_out", "http://localhost:8081/off/http_out");
-      });
+      // builder.Layout((20, 70, BaseZ), LayoutAxis.X, LayoutAxis.Y, 2, l =>
+      // {
+      //   var httpIn = l.HttpLever("http_in");
+      //
+      //   l.Step();
+      //
+      //   l.Not("http_not", httpIn);
+      //
+      //   l.NextRow();
+      //
+      //   var toggle = l.Lever("http_toggle");
+      //
+      //   l.Step();
+      //
+      //   l.HttpAdapter("http_out", toggle, "http://localhost:8081/on/http_out", "http://localhost:8081/off/http_out");
+      // });
 
 
     Console.WriteLine("Building entity graph...");

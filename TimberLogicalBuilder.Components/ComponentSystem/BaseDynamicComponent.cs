@@ -5,6 +5,8 @@ namespace TimberLogicalBuilder.Components.ComponentSystem;
 
 public abstract class BaseDynamicComponent<TInput, TOutput>(Vector3Int maxSize) : BaseComponent<TOutput>
 {
+  public override bool IsDynamic => true;
+  // public override Vector3Int LayoutSize => MaxSize;
   public Vector3Int MaxSize { get; } = maxSize;
   private int _primary;
   private int _secondary;

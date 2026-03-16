@@ -23,4 +23,12 @@ public readonly record struct Vector3Int(int X, int Y, int Z) : IEquatable<Vecto
     {
         return HashCode.Combine(X, Y, Z);
     }
+    
+  public static Vector3Int Min(Vector3Int a, Vector3Int b)
+    => new(Math.Min(a.X, b.X), Math.Min(a.Y, b.Y), Math.Min(a.Z, b.Z));
+
+  public static Vector3Int Max(Vector3Int a, Vector3Int b)
+    => new(Math.Max(a.X, b.X), Math.Max(a.Y, b.Y), Math.Max(a.Z, b.Z));
+
+  public static Vector3Int DefaultGridSquare => (1, 1, 2);
 }
