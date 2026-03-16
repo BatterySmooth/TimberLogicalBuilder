@@ -74,7 +74,7 @@ public class EntityIngester
         inputAId = entity["Components"]?["Automatable"]?["Input"]?.AsValue().ToString();
         break;
       case "Timer":
-        ent = new LogicNode(name, loc).SetTimerMode(TimberEntity.GetTimerMode(entity))
+        ent = new LogicNode(NodeType.Timer, name, loc).SetTimerMode(TimberEntity.GetTimerMode(entity))
           .SetTimerIntervalA(TimberEntity.GetTimerInterval(entity, true) ?? new TimerInterval(1, TimerUnit.Hours));
         if (TimberEntity.GetTimerInterval(entity, false).HasValue)
           ent.SetTimerIntervalB(TimberEntity.GetTimerInterval(entity, false)!.Value);
