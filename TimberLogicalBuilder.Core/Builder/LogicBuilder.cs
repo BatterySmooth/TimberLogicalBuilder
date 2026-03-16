@@ -85,8 +85,7 @@ public class LogicBuilder
   #region Empty
   public LogicNode Empty(string name, Vector3Int position)
   {
-    var empty = new LogicNode(name, position)
-      .SetIsEmpty(true)
+    var empty = new LogicNode(NodeType.Empty, name, position)
       .Covered();
     return _graph.Add(empty);
   }
@@ -95,7 +94,7 @@ public class LogicBuilder
   #region Levers
   public LogicNode Lever(string name, Vector3Int position)
   {
-    var lever = Reuse(new LogicNode(name, position));
+    var lever = Reuse(new LogicNode(NodeType.Lever, name, position));
     return _graph.Add(lever);
   }
   #endregion
@@ -113,7 +112,7 @@ public class LogicBuilder
     => AddRelay(RelayMode.Xor, name, position, inputA: inputA, inputB: inputB);
   private LogicNode AddRelay(RelayMode mode, string name, Vector3Int position, ISignalSource? inputA = null, ISignalSource? inputB = null)
   {
-    var relay = Reuse(new LogicNode(name, position)
+    var relay = Reuse(new LogicNode(NodeType.Relay, name, position)
       .SetRelayMode(mode));
     if (inputA is not null) relay.ConnectA(inputA);
     if (inputB is not null) relay.ConnectB(inputB);
@@ -132,7 +131,7 @@ public class LogicBuilder
     => AddMemory(MemoryMode.FlipFlop, name, position, inputA: inputA, inputB: inputB, reset: reset);
   private LogicNode AddMemory(MemoryMode mode, string name, Vector3Int position, ISignalSource? inputA = null, ISignalSource? inputB = null, ISignalSource? reset = null)
   {
-    var memory = Reuse(new LogicNode(name, position)
+    var memory = Reuse(new LogicNode(NodeType.Memory, name, position)
       .SetMemoryMode(mode));
     if (inputA is not null) memory.ConnectA(inputA);
     if (inputB is not null) memory.ConnectB(inputB);
@@ -152,7 +151,7 @@ public class LogicBuilder
     => AddTimer(TimerMode.Oscillator, name, position, intervalA, intervalB, input: input, reset: reset);
   private LogicNode AddTimer(TimerMode mode, string name, Vector3Int position, TimerInterval intervalA, TimerInterval? intervalB = null, ISignalSource? input = null, ISignalSource? reset = null)
   {
-    var delay = Reuse(new LogicNode(name, position)
+    var delay = Reuse(new LogicNode(NodeType.Timer, name, position)
       .SetTimerMode(mode)
       .SetTimerIntervalA(intervalA));
     if (intervalB.HasValue) delay.SetTimerIntervalB(intervalB.Value);
@@ -165,12 +164,33 @@ public class LogicBuilder
   #region Indicators
   public LogicNode Indicator(string name, Vector3Int position, ISignalSource? input = null, Color? color = null)
   {
-    var indicator = Reuse(new LogicNode(name, position));
+    var indicator = Reuse(new LogicNode(NodeType.Indicator, name, position));
     if (input is not null) indicator.ConnectA(input);
     if (color is not null) indicator.Color(color.Value);
     _graph.Add(indicator);
     return indicator;
   }
+  #endregion
+
+  #region Http
+  public LogicNode HttpLever(string name, Vector3Int position, Color? color = null)
+  {
+    var lever = Reuse(new LogicNode(NodeType.HttpLever, name, position));
+    if(color is not null) lever.Color(color.Value);
+    _graph.Add(lever);
+    return lever;
+  }
+
+  public LogicNode HttpAdapter(string name, Vector3Int position, ISignalSource? input = null, string? UrlWhenOn = null, string? UrlWhenOff = null)
+  {
+    var adapter = Reuse(new LogicNode(NodeType.HttpAdapter, name, position));
+    if(input is not null) adapter.ConnectA(input);
+    if(UrlWhenOn is not null) adapter.SetWhenOnHttp(UrlWhenOn);
+    if(UrlWhenOff is not null) adapter.SetWhenOffHttp(UrlWhenOff);
+    _graph.Add(adapter);
+    return adapter;
+  }
+
   #endregion
 #endregion
 

@@ -47,14 +47,14 @@ public class EntityIngester
     switch(factionlessType)
     {
       case "Relay":
-        ent = new LogicNode(name, loc).SetRelayMode(TimberEntity.GetRelayMode(entity));
+        ent = new LogicNode(NodeType.Relay, name, loc).SetRelayMode(TimberEntity.GetRelayMode(entity));
         ent.Id = id;
         sourcesById[id] = (ISignalSource) ent;
         inputAId = entity["Components"]?["Relay"]?["InputA"]?.AsValue().ToString();
         inputBId = entity["Components"]?["Relay"]?["InputB"]?.AsValue().ToString();
         break;
       case "Memory":
-        ent = new LogicNode(name, loc).SetMemoryMode(TimberEntity.GetMemoryMode(entity));
+        ent = new LogicNode(NodeType.Memory, name, loc).SetMemoryMode(TimberEntity.GetMemoryMode(entity));
         ent.Id = id;
         sourcesById[id] = (ISignalSource) ent;
         inputAId = entity["Components"]?["Memory"]?["InputA"]?.AsValue().ToString();
@@ -64,12 +64,12 @@ public class EntityIngester
       case "Lever":
         Boolean.TryParse(entity["Components"]?["Lever"]?["IsSpringReturn"]?.AsValue().ToString(), out bool isReturn);
         Boolean.TryParse(entity["Components"]?["Lever"]?["isPinned"]?.AsValue().ToString(), out bool isPinned);
-        ent = new LogicNode(name, loc).SetIsSpringReturn(isReturn).SetIsPinned(isPinned);
+        ent = new LogicNode(NodeType.Lever, name, loc).SetIsSpringReturn(isReturn).SetIsPinned(isPinned);
         ent.Id = id;
         sourcesById[id] = (ISignalSource) ent;
         break;
       case "Indicator":
-        ent = new LogicNode(name, loc);
+        ent = new LogicNode(NodeType.Indicator, name, loc);
         ent.Id = id;
         inputAId = entity["Components"]?["Automatable"]?["Input"]?.AsValue().ToString();
         break;
@@ -78,6 +78,16 @@ public class EntityIngester
           .SetTimerIntervalA(TimberEntity.GetTimerInterval(entity, true) ?? new TimerInterval(1, TimerUnit.Hours));
         if (TimberEntity.GetTimerInterval(entity, false).HasValue)
           ent.SetTimerIntervalB(TimberEntity.GetTimerInterval(entity, false)!.Value);
+        ent.Id = id;
+        sourcesById[id] = (ISignalSource) ent;
+        break;
+      case "HttpAdapter":
+        ent = new LogicNode(NodeType.HttpAdapter, name, loc);
+        ent.Id = id;
+        inputAId = entity["Components"]?["Automatable"]?["Input"]?.AsValue().ToString();
+        break;
+      case "HttpLever":
+        ent = new LogicNode(NodeType.HttpLever, name, loc);
         ent.Id = id;
         sourcesById[id] = (ISignalSource) ent;
         break;

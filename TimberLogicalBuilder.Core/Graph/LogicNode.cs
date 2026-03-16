@@ -4,18 +4,16 @@ using TimberLogicalBuilder.Core.Structs;
 
 namespace TimberLogicalBuilder.Core.Graph;
 
-public class LogicNode(string name, Vector3Int position) : ISignalSource
+public class LogicNode(NodeType type, string name, Vector3Int position) : ISignalSource
 {
+  public NodeType NodeType {get; set; } = type;
   public Guid Id { get; set; } = Guid.NewGuid();
   public string Name { get; set; } = name;
   public Vector3Int Position { get; set; } = position;
   
-  public bool IsEmpty { get; private set; }
-
-  public LogicNode SetIsEmpty(bool isEmpty)
+  public bool IsEmpty()
   {
-    IsEmpty = isEmpty;
-    return this;
+    return NodeType == NodeType.Empty;
   }
   
   public RelayMode? RelayMode { get; private set; }
@@ -141,7 +139,7 @@ public class LogicNode(string name, Vector3Int position) : ISignalSource
   }
   public LogicNode UnSprung()
   {
-    IsSpringReturn = true;
+    IsSpringReturn = false;
     return this;
   }
   
@@ -149,6 +147,28 @@ public class LogicNode(string name, Vector3Int position) : ISignalSource
   public LogicNode Color(Color color)
   {
     CustomColor = color;
+    return this;
+  }
+
+  public string WhenOnHttp {get; private set; } = "http://localhost:8081/on/" + name;
+  public LogicNode SetWhenOnHttp(string url)
+  {
+    WhenOnHttp = url;
+    return this;
+  }
+
+  public string WhenOffHttp {get; private set; } = "http://localhost:8081/off/" + name;
+
+  public LogicNode SetWhenOffHttp(string url)
+  {
+    WhenOffHttp = url;
+    return this;
+  }
+
+  public HttpMode? HttpMode {get; private set; }
+  public LogicNode SetHttpMode(HttpMode mode)
+  {
+    HttpMode = mode;
     return this;
   }
 }

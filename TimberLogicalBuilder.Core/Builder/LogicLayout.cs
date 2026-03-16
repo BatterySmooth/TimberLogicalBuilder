@@ -147,7 +147,14 @@ public sealed class LogicLayout
   public LogicNode Indicator(string name, ISignalSource? input = null, Color? color = null)
     => Build(() => _builder.Indicator(name, Cursor, input, color));
   #endregion
-  
+
+  #region Http
+  public LogicNode HttpAdapter(string name, ISignalSource? input = null, string? UrlWhenOn = null, string? UrlWhenOff = null)
+    => Build(() => _builder.HttpAdapter(name, Cursor, input, UrlWhenOn, UrlWhenOff));
+  public LogicNode HttpLever(string name)
+    => Build(() => _builder.HttpLever(name, Cursor));
+  #endregion
+
   private LogicNode Build(Func<LogicNode> factory)
   {
     var node = factory();

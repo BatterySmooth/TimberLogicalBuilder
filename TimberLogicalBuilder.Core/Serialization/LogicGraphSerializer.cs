@@ -14,7 +14,7 @@ public static class LogicGraphSerializer
     var array = new JsonArray();
     foreach (var node in graph.Nodes)
     {
-      if (!node.IsEmpty)
+      if (!node.IsEmpty())
         array.Add(SerializeNode(node));
       if (node.IsCovered)
         array.Add(SerializePlatform(node));
@@ -25,11 +25,18 @@ public static class LogicGraphSerializer
   
   private static JsonObject SerializeNode(LogicNode node)
   {
-    if (node.RelayMode is not null) return SerializeRelay(node);
-    if (node.MemoryMode is not null) return SerializeMemory(node);
-    if (node.TimerMode is not null) return SerializeTimer(node);
-    if (node.CustomColor.HasValue) return SerializeIndicator(node);
-    if (!node.IsEmpty) return SerializeLever(node);
+    if (node.NodeType is NodeType.Relay) return SerializeRelay(node);
+    if (node.NodeType is NodeType.Memory) return SerializeMemory(node);
+    if (node.NodeType is NodeType.Timer) return SerializeTimer(node);
+    if (node.NodeType is NodeType.Indicator) return SerializeIndicator(node);
+    if (node.NodeType is NodeType.Lever) return SerializeLever(node);
+    if (node.NodeType is NodeType.HttpLever) return SerializeHttpLever(node);
+    if (node.NodeType is NodeType.HttpAdapter) return SerializeHttpAdapter(node);
+    
+    // This really shouldn't happen, we're only called by Serialize(), which checks for empty nodes.
+    if (node.NodeType is NodeType.Empty) throw new ArgumentOutOfRangeException("Tried to serialize an empty node");
+
+    // This is more likely to happen.
     throw new ArgumentOutOfRangeException(nameof(node), "Node type not supported");
   }
   
@@ -151,6 +158,38 @@ public static class LogicGraphSerializer
       colorObj["b"] = indicator.CustomColor.Value.B / 255f;
       colorObj["a"] = indicator.CustomColor.Value.A / 255f;
     }
+    return json;
+  }
+
+  private static JsonObject SerializeHttpLever(LogicNode lever)
+  {
+    var json = LoadTemplate(Templates.HttpLeverTemplate);
+    ApplyCommon(json, lever);
+    ApplyFaction(json);
+    var leverNode = json["Components"]!["Lever"]!.AsObject();
+    if (lever.IsSpringReturn)
+      leverNode["IsSpringReturn"] = true;
+    if (lever.IsPinned)
+      leverNode["IsPinned"] = true;
+    return json;
+  }
+
+  private static JsonObject SerializeHttpAdapter(LogicNode adapter)
+  {
+    if (adapter.InputA is null) throw new ArgumentNullException(nameof(adapter.InputA));
+    var json = LoadTemplate(Templates.HttpAdapterTemplate);
+    ApplyCommon(json, adapter);
+    ApplyFaction(json);
+    json["Components"]!["Automatable"]!["Input"] =
+      adapter.InputA.Id.ToString();
+    var adapterNode = json["Components"]!["HttpAdapter"]!.AsObject();
+    if (adapter.HttpMode != null)
+      adapterNode["MethodKey"] = adapter.HttpMode.ToString();
+    else
+      adapterNode["MethodKey"] = HttpMode.Post.ToString(); // gonna be opinionated and default to POST.
+
+    adapterNode["SwitchedOnWebbookUrlKey"] = adapter.WhenOnHttp;
+    adapterNode["SwitchedOffWebbookUrlKey"] = adapter.WhenOffHttp;
     return json;
   }
   
